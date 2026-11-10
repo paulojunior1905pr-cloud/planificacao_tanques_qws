@@ -1,0 +1,23 @@
+[
+  {
+    "id": "TQ-61006",
+    "descricao": "Pintura do costado · Ø 98,5 m",
+    "desenho": "DE-5290.00-6311-511-TZJ-005",
+    "modelo": "tanques/TQ-61006.html",
+    "imagem": "imagens/TQ-61006.png"
+  },
+  {
+    "id": "TQ-61009",
+    "descricao": "Pintura do costado · Ø 98,5 m",
+    "desenho": "DE-5290.00-6311",
+    "modelo": "tanques/TQ-61009.html",
+    "imagem": "imagens/TQ-61009.png"
+  },
+  {
+    "id": "TQ-69024",
+    "descricao": "Pintura do costado · Ø 43,9 m",
+    "desenho": "DE-5290.00-6319-511-MFQ-001",
+    "modelo": "tanques/TQ-69024.html",
+    "imagem": "imagens/TQ-69024.png"
+  }
+]
