@@ -21,3 +21,7 @@ Lembre da vírgula entre um bloco e outro. A ordem no arquivo é a ordem na pág
 
 ## Retirar um tanque
 Apague o bloco dele em `tanques.json` (e, se quiser, os arquivos em `tanques/` e `imagens/`).
+
+## Botão "← Tanques"
+Cada modelo tem um botão para voltar à página inicial. Ao adicionar um modelo novo, rode
+`python ferramentas/botao_voltar.py` para colocar o botão nele (não duplica nos que já têm).
