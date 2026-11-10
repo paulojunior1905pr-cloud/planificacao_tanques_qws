@@ -105,7 +105,7 @@ aside{display:flex;flex-direction:column;gap:12px;min-width:0}
     <div class="card">
       <table class="rings" id="rings"><thead><tr><th>Anel</th><th>Hidro</th><th>Fundo</th><th>Inter.</th><th>Acab.</th></tr></thead><tbody></tbody></table>
     </div>
-    <p class="foot">Área externa por etapa: 2.018,6 m² (6 anéis, 14,63 m de costado, Ø 43,9 m). Posições das chapas pelo desenho DE-5290.00-6319-511-MFQ-002 rev. C; 0° = Norte. Pelo conjunto MFQ-001: amarelo = escada helicoidal (250° a 207,4°, com plataforma intermediária e superior), anel vermelho = boca de visita BV-1 a BV-5, quadrado azul-claro = porta de limpeza PL-1 e PL-2 (numeradas a partir da escada, sentido anti-horário). Teto: domo geodésico. Cores: cinza aço = hidrojato, marrom = fundo, bege = 2ª demão, acabamento preto no 1º anel e branco nos demais; riscado cinza = não iniciada. Fonte do avanço: planilha de lançamentos.</p>
+    <p class="foot">Área externa por etapa: 2.018,6 m² (6 anéis, 14,63 m de costado, Ø 43,9 m). Posições das chapas pelo desenho DE-5290.00-6319-511-MFQ-002 rev. C; 0° = Norte. Pelo conjunto MFQ-001: amarelo = escada helicoidal (250° a 207,4°, com plataforma intermediária e superior), anel vermelho = boca de visita BV-1 a BV-5, quadrado azul-claro = porta de limpeza PL-1 e PL-2 (numeradas a partir da escada, sentido anti-horário). Cinza-escuro = anel de contraventamento a EL +13,716 (DE-5290.00-6319-511-MFQ-024 rev. D), com abertura para a escada. Teto: domo geodésico. Cores: cinza aço = hidrojato, marrom = fundo, bege = 2ª demão, acabamento preto no 1º anel e branco nos demais; riscado cinza = não iniciada. Fonte do avanço: planilha de lançamentos.</p>
   </aside>
 </div>
 </div>
@@ -1218,8 +1218,28 @@ roof.position.y=TOP+DH-RS;scene.add(roof);
 const domeW=new THREE.LineSegments(new THREE.WireframeGeometry(new THREE.SphereGeometry(RS+0.02,36,8,0,Math.PI*2,0,TH0)),new THREE.LineBasicMaterial({color:0x8E959B}));
 domeW.position.y=roof.position.y;scene.add(domeW);
 // passadiço/anel de contraventamento no topo do costado
-const girder=new THREE.Mesh(new THREE.RingGeometry(R+0.05,R+1.0,128),new THREE.MeshLambertMaterial({color:0x7d8388,side:THREE.DoubleSide}));
-girder.rotation.x=-Math.PI/2;girder.position.y=TOP+0.02;scene.add(girder);
+// anel de contraventamento (DE-5290.00-6319-511-MFQ-024 rev. D): piso a EL +13,716, largura ~1,06 m,
+// módulos poligonais de 6 m, mãos-francesas a 45° nas juntas, abertura da escada (módulo AA) ~204°-219°
+(function girderRing(){const EL=13.716,Ri=R+0.03,Ro=R+1.10,STEP=15,OPEN=[208,216];
+  const mat=new THREE.MeshLambertMaterial({color:0x5E6A73,side:THREE.DoubleSide});
+  const P=(b,r,y)=>new THREE.Vector3(r*Math.sin(b*Math.PI/180),y,-r*Math.cos(b*Math.PI/180));
+  const inOpen=b=>b>OPEN[0]&&b<OPEN[1];
+  for(let b0=0;b0<360;b0+=STEP){const b1=b0+STEP;
+    // piso: subdivide para recortar a abertura da escada
+    const n=6;for(let k=0;k<n;k++){const a0=b0+STEP*k/n,a1=b0+STEP*(k+1)/n;if(inOpen((a0+a1)/2))continue;
+      const g=new THREE.BufferGeometry(),v=[P(a0,Ri,EL),P(a1,Ri,EL),P(a1,Ro,EL),P(a0,Ro,EL)];
+      g.setFromPoints([v[0],v[1],v[2],v[0],v[2],v[3]]);g.computeVertexNormals();scene.add(new THREE.Mesh(g,mat));}
+    // rodapé/aba externa (vertical) e guarda-corpo 1,06 m
+    const e0=P(b0,Ro,0),e1=P(b1,Ro,0),len=e0.distanceTo(e1),mid=P((b0+b1)/2,Ro*Math.cos(STEP/2*Math.PI/180),0);
+    const web=new THREE.Mesh(new THREE.BoxGeometry(len,0.30,0.03),mat);web.position.set(mid.x,EL-0.05,mid.z);web.lookAt(0,web.position.y,0);scene.add(web);
+    const rail=new THREE.Mesh(new THREE.BoxGeometry(len,0.05,0.05),mat);rail.position.set(mid.x,EL+1.06,mid.z);rail.lookAt(0,rail.position.y,0);scene.add(rail);
+    const mr=new THREE.Mesh(new THREE.BoxGeometry(len,0.04,0.04),mat);mr.position.set(mid.x,EL+0.55,mid.z);mr.lookAt(0,mr.position.y,0);scene.add(mr);
+    const post=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,1.06,6),mat);const pp=P(b0,Ro,0);post.position.set(pp.x,EL+0.53,pp.z);scene.add(post);
+    // mão-francesa a 45°: do costado ~1,14 m abaixo do piso até a borda externa
+    const a=P(b0,Ri,EL-1.14),c=P(b0,Ro-0.05,EL-0.05),br=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,a.distanceTo(c),6),mat);
+    br.position.copy(a.clone().add(c).multiplyScalar(0.5));br.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),c.clone().sub(a).normalize());scene.add(br);
+  }
+})();
 const ground=new THREE.Mesh(new THREE.RingGeometry(R+0.2,R+12,128),new THREE.MeshLambertMaterial({color:0x9a9d97,transparent:true,opacity:0.35}));
 ground.rotation.x=-Math.PI/2;ground.position.y=-0.05;scene.add(ground);
 
