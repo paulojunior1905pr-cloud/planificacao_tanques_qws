@@ -105,7 +105,7 @@ aside{display:flex;flex-direction:column;gap:12px;min-width:0}
     <div class="card">
       <table class="rings" id="rings"><thead><tr><th>Anel</th><th>Hidro</th><th>Fundo</th><th>Inter.</th><th>Acab.</th></tr></thead><tbody></tbody></table>
     </div>
-    <p class="foot">Área externa por etapa: 2.018,6 m² (6 anéis, 14,63 m de costado, Ø 43,9 m). Posições das chapas pelo desenho DE-5290.00-6319-511-MFQ-002 rev. C; 0° = Norte. Pelo conjunto MFQ-001: amarelo = escada helicoidal (250° a 207,4°, com plataforma intermediária e superior), anel vermelho = boca de visita BV-1 a BV-5, quadrado azul-claro = porta de limpeza PL-1 e PL-2 (numeradas a partir da escada, sentido anti-horário). Cinza-escuro = anel de contraventamento a EL +13,716 (DE-5290.00-6319-511-MFQ-024 rev. D), com abertura para a escada. Teto: domo geodésico. Cores: cinza aço = hidrojato, marrom = fundo, bege = 2ª demão, acabamento preto no 1º anel e branco nos demais; riscado cinza = não iniciada. Fonte do avanço: planilha de lançamentos.</p>
+    <p class="foot">Área externa por etapa: 2.018,6 m² (6 anéis, 14,63 m de costado, Ø 43,9 m). Posições das chapas pelo desenho DE-5290.00-6319-511-MFQ-002 rev. C; 0° = Norte. Pelo conjunto MFQ-001: amarelo = escada helicoidal (250° a 207,4°, com plataforma intermediária e superior), anel vermelho = boca de visita BV-1 a BV-5, quadrado azul-claro = porta de limpeza PL-1 e PL-2 (numeradas a partir da escada, sentido anti-horário). Amarelo também = anel de contraventamento a EL +13,716 (DE-5290.00-6319-511-MFQ-024 rev. D), com abertura para a escada. Teto: domo geodésico. Cores: cinza aço = hidrojato, marrom = fundo, bege = 2ª demão, acabamento preto no 1º anel e branco nos demais; riscado cinza = não iniciada. Fonte do avanço: planilha de lançamentos.</p>
   </aside>
 </div>
 </div>
@@ -1221,7 +1221,7 @@ domeW.position.y=roof.position.y;scene.add(domeW);
 // anel de contraventamento (DE-5290.00-6319-511-MFQ-024 rev. D): piso a EL +13,716, largura ~1,06 m,
 // módulos poligonais de 6 m, mãos-francesas a 45° nas juntas, abertura da escada (módulo AA) ~204°-219°
 (function girderRing(){const EL=13.716,Ri=R+0.03,Ro=R+1.10,STEP=15,OPEN=[208,216];
-  const mat=new THREE.MeshLambertMaterial({color:0x5E6A73,side:THREE.DoubleSide});
+  const mat=new THREE.MeshLambertMaterial({color:0xD9B21B,side:THREE.DoubleSide});
   const P=(b,r,y)=>new THREE.Vector3(r*Math.sin(b*Math.PI/180),y,-r*Math.cos(b*Math.PI/180));
   const inOpen=b=>b>OPEN[0]&&b<OPEN[1];
   for(let b0=0;b0<360;b0+=STEP){const b1=b0+STEP;
