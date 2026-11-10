@@ -8,15 +8,15 @@
 /* Layout: painel de campo — modelo 3D grande à esquerda, indicadores por etapa à direita; empilha no celular */
 :root{
   --bg:#EEF0EE; --panel:#F8F9F7; --fg:#1B2430; --muted:#5B6672; --line:#D3D8D4; --steel:#C9CDC9; --steel-edge:#8D958F;
-  --hidro:#2E75B6; --fundo:#C55A11; --inter:#7030A0; --acab:#4E9A2F;
+  --hidro:#7F878E; --fundo:#7A3E22; --inter:#E2D3AE; --acab:#FFFFFF; --acab1:#1C1C1C;
   --display:'Barlow Condensed','Arial Narrow',Arial,sans-serif; --body:'IBM Plex Sans',Arial,sans-serif; --mono:'IBM Plex Mono','Courier New',monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#12171D; --panel:#1A2129; --fg:#E7EBEE; --muted:#9AA5B0; --line:#2C3640; --steel:#3A434C; --steel-edge:#56616B;
-  --hidro:#5B9BD5; --fundo:#E07B3A; --inter:#A67BD0; --acab:#79BE5B; color-scheme:dark}}
+  --hidro:#7F878E; --fundo:#7A3E22; --inter:#E2D3AE; --acab:#FFFFFF; --acab1:#1C1C1C; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#12171D; --panel:#1A2129; --fg:#E7EBEE; --muted:#9AA5B0; --line:#2C3640; --steel:#3A434C; --steel-edge:#56616B;
-  --hidro:#5B9BD5; --fundo:#E07B3A; --inter:#A67BD0; --acab:#79BE5B; color-scheme:dark}
+  --hidro:#7F878E; --fundo:#7A3E22; --inter:#E2D3AE; --acab:#FFFFFF; --acab1:#1C1C1C; color-scheme:dark}
 html,body{height:100%}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px;box-sizing:border-box}
@@ -32,7 +32,7 @@ h1{font-family:var(--display);font-weight:700;font-size:44px;line-height:1;margi
 .views button{font:500 13px var(--body);color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:6px 10px;cursor:pointer;display:flex;align-items:center;gap:6px}
 .views button[aria-pressed="true"]{border-color:var(--fg);box-shadow:inset 0 0 0 1px var(--fg)}
 .views button:focus-visible,.ctrl button:focus-visible{outline:2px solid var(--hidro);outline-offset:2px}
-.sw{width:10px;height:10px;border-radius:2px;display:inline-block}
+.sw{width:10px;height:10px;border-radius:2px;display:inline-block;box-shadow:inset 0 0 0 1px var(--steel-edge)}
 .ctrl{position:absolute;right:12px;bottom:12px;display:flex;gap:6px}
 .ctrl button{font:500 12px var(--mono);color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:6px 9px;cursor:pointer}
 .ctrl button[aria-pressed="true"]{border-color:var(--fg);box-shadow:inset 0 0 0 1px var(--fg)}
@@ -57,7 +57,7 @@ aside{display:flex;flex-direction:column;gap:12px;min-width:0}
 .st .name{display:flex;align-items:center;gap:8px;font-weight:600}
 .st .pct{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500}
 .bar{grid-column:1/-1;height:8px;background:var(--bg);border:1px solid var(--line);border-radius:2px;overflow:hidden}
-.bar i{display:block;height:100%}
+.bar i{display:block;height:100%;box-shadow:inset 0 0 0 1px var(--steel-edge)}
 .st .meta{grid-column:1/-1;font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
 .rings{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
 .rings th,.rings td{padding:4px 4px;text-align:right;border-bottom:1px solid var(--line)}
@@ -105,7 +105,7 @@ aside{display:flex;flex-direction:column;gap:12px;min-width:0}
     <div class="card">
       <table class="rings" id="rings"><thead><tr><th>Anel</th><th>Hidro</th><th>Fundo</th><th>Inter.</th><th>Acab.</th></tr></thead><tbody></tbody></table>
     </div>
-    <p class="foot">Área externa por etapa: 2.018,6 m² (6 anéis, 14,63 m de costado, Ø 43,9 m). Posições das chapas pelo desenho DE-5290.00-6319-511-MFQ-002 rev. C; 0° = Norte. Pelo conjunto MFQ-001: amarelo = escada helicoidal (250° a 207,4°, com plataforma intermediária e superior), anel vermelho = boca de visita (5), quadrado azul-claro = porta de limpeza (2). Teto: domo geodésico. Fonte do avanço: planilha de lançamentos.</p>
+    <p class="foot">Área externa por etapa: 2.018,6 m² (6 anéis, 14,63 m de costado, Ø 43,9 m). Posições das chapas pelo desenho DE-5290.00-6319-511-MFQ-002 rev. C; 0° = Norte. Pelo conjunto MFQ-001: amarelo = escada helicoidal (250° a 207,4°, com plataforma intermediária e superior), anel vermelho = boca de visita BV-1 a BV-5, quadrado azul-claro = porta de limpeza PL-1 e PL-2 (numeradas a partir da escada, sentido anti-horário). Teto: domo geodésico. Cores: cinza aço = hidrojato, marrom = fundo, bege = 2ª demão, acabamento preto no 1º anel e branco nos demais; riscado cinza = não iniciada. Fonte do avanço: planilha de lançamentos.</p>
   </aside>
 </div>
 </div>
@@ -1164,7 +1164,7 @@ aside{display:flex;flex-direction:column;gap:12px;min-width:0}
 } )();
 </script>
 <script>
-const DATA=[{"a":1,"n":1,"s":353.9,"e":25.1,"ln":12000,"ar":29.3,"o":"Boca de visita 18A 0°","p":[0,0,0,0]},{"a":1,"n":2,"s":25.1,"e":56.5,"ln":12000,"ar":29.3,"o":"","p":[0,0,0,0]},{"a":1,"n":3,"s":56.5,"e":87.8,"ln":12000,"ar":29.3,"o":"Boca de visita 18B 70°","p":[0,0,0,0]},{"a":1,"n":4,"s":87.8,"e":119.1,"ln":12000,"ar":29.3,"o":"Bocal 24 93°; Bocal 23 97°","p":[0,0,0,0]},{"a":1,"n":5,"s":119.1,"e":129.0,"ln":3800,"ar":9.28,"o":"Porta de limpeza 124°","p":[0,0,0,0]},{"a":1,"n":6,"s":129.0,"e":150.4,"ln":8200,"ar":20.02,"o":"Boca de visita 18C 144°","p":[0,0,0,0]},{"a":1,"n":7,"s":150.4,"e":173.9,"ln":9000,"ar":21.97,"o":"","p":[0,0,0,0]},{"a":1,"n":8,"s":173.9,"e":205.2,"ln":12000,"ar":29.3,"o":"","p":[0,0,0,0]},{"a":1,"n":9,"s":205.2,"e":236.5,"ln":12000,"ar":29.3,"o":"Boca de visita 18D 216°","p":[0,0,0,0]},{"a":1,"n":10,"s":236.5,"e":267.9,"ln":12000,"ar":29.3,"o":"Escada helicoidal passa por fora – início da escada 250°; Bocal 20 238°; Bocal 06/22 266,6°","p":[0,0,0,0]},{"a":1,"n":11,"s":267.9,"e":299.1,"ln":12000,"ar":29.3,"o":"Boca de visita 18E 297°; Bocal 01 270°; Bocal 08 273,4°; Bocal 21 292,5°","p":[0,0,0,0]},{"a":1,"n":12,"s":299.1,"e":309.1,"ln":3800,"ar":9.28,"o":"Porta de limpeza 304°","p":[0,0,0,0]},{"a":1,"n":13,"s":309.1,"e":330.5,"ln":8200,"ar":20.02,"o":"","p":[0,0,0,0]},{"a":1,"n":14,"s":330.5,"e":353.9,"ln":8947,"ar":21.84,"o":"Fechamento (com sobremetal)","p":[0,0,0,0]},{"a":2,"n":1,"s":341.6,"e":12.9,"ln":12000,"ar":29.3,"o":"","p":[0,0,0,0]},{"a":2,"n":2,"s":12.9,"e":44.3,"ln":12000,"ar":29.3,"o":"","p":[0,0,0,0]},{"a":2,"n":3,"s":44.3,"e":75.6,"ln":12000,"ar":29.3,"o":"","p":[0,0,0,0]},{"a":2,"n":4,"s":75.6,"e":106.8,"ln":12000,"ar":29.3,"o":"","p":[0,0,0,0]},{"a":2,"n":5,"s":106.8,"e":138.2,"ln":12000,"ar":29.3,"o":"","p":[0,0,0,0]},{"a":2,"n":6,"s":138.2,"e":163.0,"ln":9500,"ar":23.19,"o":"","p":[0,0,0,0]},{"a":2,"n":7,"s":163.0,"e":194.3,"ln":12000,"ar":29.3,"o":"","p":[0,0,0,0]},{"a":2,"n":8,"s":194.3,"e":225.6,"ln":12000,"ar":29.3,"o":"","p":[0,0,0,0]},{"a":2,"n":9,"s":225.6,"e":256.9,"ln":12000,"ar":29.3,"o":"Escada helicoidal passa por fora","p":[0,0,0,0]},{"a":2,"n":10,"s":256.9,"e":288.2,"ln":12000,"ar":29.3,"o":"","p":[0,0,0,0]},{"a":2,"n":11,"s":288.2,"e":319.5,"ln":12000,"ar":29.3,"o":"","p":[0,0,0,0]},{"a":2,"n":12,"s":319.5,"e":341.6,"ln":8442,"ar":20.61,"o":"Fechamento (com sobremetal)","p":[0,0,0,0]},{"a":3,"n":1,"s":352.6,"e":23.9,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":3,"n":2,"s":23.9,"e":55.2,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":3,"n":3,"s":55.2,"e":86.5,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":3,"n":4,"s":86.5,"e":117.8,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":3,"n":5,"s":117.8,"e":149.1,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":3,"n":6,"s":149.1,"e":173.9,"ln":9500,"ar":23.19,"o":"","p":[0,0,0,0]},{"a":3,"n":7,"s":173.9,"e":205.2,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":3,"n":8,"s":205.2,"e":236.5,"ln":12000,"ar":29.29,"o":"Escada helicoidal passa por fora","p":[0,0,0,0]},{"a":3,"n":9,"s":236.5,"e":267.9,"ln":12000,"ar":29.29,"o":"Escada helicoidal passa por fora","p":[0,0,0,0]},{"a":3,"n":10,"s":267.9,"e":299.1,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":3,"n":11,"s":299.1,"e":330.5,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":3,"n":12,"s":330.5,"e":352.6,"ln":8442,"ar":20.61,"o":"Fechamento (com sobremetal)","p":[0,0,0,0]},{"a":4,"n":1,"s":341.6,"e":12.9,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":4,"n":2,"s":12.9,"e":44.3,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":4,"n":3,"s":44.3,"e":75.6,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":4,"n":4,"s":75.6,"e":106.8,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":4,"n":5,"s":106.8,"e":138.2,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":4,"n":6,"s":138.2,"e":163.0,"ln":9500,"ar":23.19,"o":"","p":[0,0,0,0]},{"a":4,"n":7,"s":163.0,"e":194.3,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":4,"n":8,"s":194.3,"e":225.6,"ln":12000,"ar":29.29,"o":"Escada helicoidal passa por fora","p":[0,0,0,0]},{"a":4,"n":9,"s":225.6,"e":256.9,"ln":12000,"ar":29.29,"o":"Escada helicoidal passa por fora","p":[0,0,0,0]},{"a":4,"n":10,"s":256.9,"e":288.2,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":4,"n":11,"s":288.2,"e":319.5,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":4,"n":12,"s":319.5,"e":341.6,"ln":8421,"ar":20.56,"o":"Fechamento (com sobremetal)","p":[0,0,0,0]},{"a":5,"n":1,"s":352.6,"e":23.9,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":5,"n":2,"s":23.9,"e":55.2,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":5,"n":3,"s":55.2,"e":86.5,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":5,"n":4,"s":86.5,"e":117.8,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":5,"n":5,"s":117.8,"e":149.1,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":5,"n":6,"s":149.1,"e":173.9,"ln":9500,"ar":23.19,"o":"","p":[0,0,0,0]},{"a":5,"n":7,"s":173.9,"e":205.2,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":5,"n":8,"s":205.2,"e":236.5,"ln":12000,"ar":29.29,"o":"Escada helicoidal passa por fora","p":[0,0,0,0]},{"a":5,"n":9,"s":236.5,"e":267.9,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":5,"n":10,"s":267.9,"e":299.1,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":5,"n":11,"s":299.1,"e":330.5,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":5,"n":12,"s":330.5,"e":352.6,"ln":8417,"ar":20.54,"o":"Fechamento (com sobremetal)","p":[0,0,0,0]},{"a":6,"n":1,"s":341.4,"e":12.7,"ln":12000,"ar":29.15,"o":"","p":[0,0,0,0]},{"a":6,"n":2,"s":12.7,"e":44.0,"ln":12000,"ar":29.15,"o":"","p":[0,0,0,0]},{"a":6,"n":3,"s":44.0,"e":68.8,"ln":9500,"ar":23.07,"o":"","p":[0,0,0,0]},{"a":6,"n":4,"s":68.8,"e":100.1,"ln":12000,"ar":29.15,"o":"","p":[0,0,0,0]},{"a":6,"n":5,"s":100.1,"e":131.4,"ln":12000,"ar":29.15,"o":"","p":[0,0,0,0]},{"a":6,"n":6,"s":131.4,"e":162.7,"ln":12000,"ar":29.15,"o":"","p":[0,0,0,0]},{"a":6,"n":7,"s":162.7,"e":194.0,"ln":12000,"ar":29.15,"o":"","p":[0,0,0,0]},{"a":6,"n":8,"s":194.0,"e":225.3,"ln":12000,"ar":29.15,"o":"Escada helicoidal passa por fora – plataforma superior 211°","p":[0,0,0,0]},{"a":6,"n":9,"s":225.3,"e":256.6,"ln":12000,"ar":29.15,"o":"","p":[0,0,0,0]},{"a":6,"n":10,"s":256.6,"e":287.9,"ln":12000,"ar":29.15,"o":"","p":[0,0,0,0]},{"a":6,"n":11,"s":287.9,"e":319.3,"ln":12000,"ar":29.15,"o":"","p":[0,0,0,0]},{"a":6,"n":12,"s":319.3,"e":341.4,"ln":8417,"ar":20.44,"o":"Fechamento (com sobremetal)","p":[0,0,0,0]}];
+const DATA=[{"a":1,"n":1,"s":353.9,"e":25.1,"ln":12000,"ar":29.3,"o":"Boca de visita BV-4 (18A) 0°","p":[0,0,0,0]},{"a":1,"n":2,"s":25.1,"e":56.5,"ln":12000,"ar":29.3,"o":"","p":[0,0,0,0]},{"a":1,"n":3,"s":56.5,"e":87.8,"ln":12000,"ar":29.3,"o":"Boca de visita BV-3 (18B) 70°","p":[0,0,0,0]},{"a":1,"n":4,"s":87.8,"e":119.1,"ln":12000,"ar":29.3,"o":"Bocal 24 93°; Bocal 23 97°","p":[0,0,0,0]},{"a":1,"n":5,"s":119.1,"e":129.0,"ln":3800,"ar":9.28,"o":"Porta de limpeza PL-1 (17B) 124°","p":[0,0,0,0]},{"a":1,"n":6,"s":129.0,"e":150.4,"ln":8200,"ar":20.02,"o":"Boca de visita BV-2 (18C) 144°","p":[0,0,0,0]},{"a":1,"n":7,"s":150.4,"e":173.9,"ln":9000,"ar":21.97,"o":"","p":[0,0,0,0]},{"a":1,"n":8,"s":173.9,"e":205.2,"ln":12000,"ar":29.3,"o":"","p":[0,0,0,0]},{"a":1,"n":9,"s":205.2,"e":236.5,"ln":12000,"ar":29.3,"o":"Boca de visita BV-1 (18D) 216°","p":[0,0,0,0]},{"a":1,"n":10,"s":236.5,"e":267.9,"ln":12000,"ar":29.3,"o":"Escada helicoidal passa por fora – início da escada 250°; Bocal 20 238°; Bocal 06/22 266,6°","p":[0,0,0,0]},{"a":1,"n":11,"s":267.9,"e":299.1,"ln":12000,"ar":29.3,"o":"Boca de visita BV-5 (18E) 297°; Bocal 01 270°; Bocal 08 273,4°; Bocal 21 292,5°","p":[0,0,0,0]},{"a":1,"n":12,"s":299.1,"e":309.1,"ln":3800,"ar":9.28,"o":"Porta de limpeza PL-2 (17A) 304°","p":[0,0,0,0]},{"a":1,"n":13,"s":309.1,"e":330.5,"ln":8200,"ar":20.02,"o":"","p":[0,0,0,0]},{"a":1,"n":14,"s":330.5,"e":353.9,"ln":8947,"ar":21.84,"o":"Chapa de fechamento","p":[0,0,0,0]},{"a":2,"n":1,"s":341.6,"e":12.9,"ln":12000,"ar":29.3,"o":"","p":[0,0,0,0]},{"a":2,"n":2,"s":12.9,"e":44.3,"ln":12000,"ar":29.3,"o":"","p":[0,0,0,0]},{"a":2,"n":3,"s":44.3,"e":75.6,"ln":12000,"ar":29.3,"o":"","p":[0,0,0,0]},{"a":2,"n":4,"s":75.6,"e":106.8,"ln":12000,"ar":29.3,"o":"","p":[0,0,0,0]},{"a":2,"n":5,"s":106.8,"e":138.2,"ln":12000,"ar":29.3,"o":"","p":[0,0,0,0]},{"a":2,"n":6,"s":138.2,"e":163.0,"ln":9500,"ar":23.19,"o":"","p":[0,0,0,0]},{"a":2,"n":7,"s":163.0,"e":194.3,"ln":12000,"ar":29.3,"o":"","p":[0,0,0,0]},{"a":2,"n":8,"s":194.3,"e":225.6,"ln":12000,"ar":29.3,"o":"","p":[0,0,0,0]},{"a":2,"n":9,"s":225.6,"e":256.9,"ln":12000,"ar":29.3,"o":"Escada helicoidal passa por fora","p":[0,0,0,0]},{"a":2,"n":10,"s":256.9,"e":288.2,"ln":12000,"ar":29.3,"o":"","p":[0,0,0,0]},{"a":2,"n":11,"s":288.2,"e":319.5,"ln":12000,"ar":29.3,"o":"","p":[0,0,0,0]},{"a":2,"n":12,"s":319.5,"e":341.6,"ln":8442,"ar":20.61,"o":"Chapa de fechamento","p":[0,0,0,0]},{"a":3,"n":1,"s":352.6,"e":23.9,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":3,"n":2,"s":23.9,"e":55.2,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":3,"n":3,"s":55.2,"e":86.5,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":3,"n":4,"s":86.5,"e":117.8,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":3,"n":5,"s":117.8,"e":149.1,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":3,"n":6,"s":149.1,"e":173.9,"ln":9500,"ar":23.19,"o":"","p":[0,0,0,0]},{"a":3,"n":7,"s":173.9,"e":205.2,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":3,"n":8,"s":205.2,"e":236.5,"ln":12000,"ar":29.29,"o":"Escada helicoidal passa por fora","p":[0,0,0,0]},{"a":3,"n":9,"s":236.5,"e":267.9,"ln":12000,"ar":29.29,"o":"Escada helicoidal passa por fora","p":[0,0,0,0]},{"a":3,"n":10,"s":267.9,"e":299.1,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":3,"n":11,"s":299.1,"e":330.5,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":3,"n":12,"s":330.5,"e":352.6,"ln":8442,"ar":20.61,"o":"Chapa de fechamento","p":[0,0,0,0]},{"a":4,"n":1,"s":341.6,"e":12.9,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":4,"n":2,"s":12.9,"e":44.3,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":4,"n":3,"s":44.3,"e":75.6,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":4,"n":4,"s":75.6,"e":106.8,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":4,"n":5,"s":106.8,"e":138.2,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":4,"n":6,"s":138.2,"e":163.0,"ln":9500,"ar":23.19,"o":"","p":[0,0,0,0]},{"a":4,"n":7,"s":163.0,"e":194.3,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":4,"n":8,"s":194.3,"e":225.6,"ln":12000,"ar":29.29,"o":"Escada helicoidal passa por fora","p":[0,0,0,0]},{"a":4,"n":9,"s":225.6,"e":256.9,"ln":12000,"ar":29.29,"o":"Escada helicoidal passa por fora","p":[0,0,0,0]},{"a":4,"n":10,"s":256.9,"e":288.2,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":4,"n":11,"s":288.2,"e":319.5,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":4,"n":12,"s":319.5,"e":341.6,"ln":8421,"ar":20.56,"o":"Chapa de fechamento","p":[0,0,0,0]},{"a":5,"n":1,"s":352.6,"e":23.9,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":5,"n":2,"s":23.9,"e":55.2,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":5,"n":3,"s":55.2,"e":86.5,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":5,"n":4,"s":86.5,"e":117.8,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":5,"n":5,"s":117.8,"e":149.1,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":5,"n":6,"s":149.1,"e":173.9,"ln":9500,"ar":23.19,"o":"","p":[0,0,0,0]},{"a":5,"n":7,"s":173.9,"e":205.2,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":5,"n":8,"s":205.2,"e":236.5,"ln":12000,"ar":29.29,"o":"Escada helicoidal passa por fora","p":[0,0,0,0]},{"a":5,"n":9,"s":236.5,"e":267.9,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":5,"n":10,"s":267.9,"e":299.1,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":5,"n":11,"s":299.1,"e":330.5,"ln":12000,"ar":29.29,"o":"","p":[0,0,0,0]},{"a":5,"n":12,"s":330.5,"e":352.6,"ln":8417,"ar":20.54,"o":"Chapa de fechamento","p":[0,0,0,0]},{"a":6,"n":1,"s":341.4,"e":12.7,"ln":12000,"ar":29.15,"o":"","p":[0,0,0,0]},{"a":6,"n":2,"s":12.7,"e":44.0,"ln":12000,"ar":29.15,"o":"","p":[0,0,0,0]},{"a":6,"n":3,"s":44.0,"e":68.8,"ln":9500,"ar":23.07,"o":"","p":[0,0,0,0]},{"a":6,"n":4,"s":68.8,"e":100.1,"ln":12000,"ar":29.15,"o":"","p":[0,0,0,0]},{"a":6,"n":5,"s":100.1,"e":131.4,"ln":12000,"ar":29.15,"o":"","p":[0,0,0,0]},{"a":6,"n":6,"s":131.4,"e":162.7,"ln":12000,"ar":29.15,"o":"","p":[0,0,0,0]},{"a":6,"n":7,"s":162.7,"e":194.0,"ln":12000,"ar":29.15,"o":"","p":[0,0,0,0]},{"a":6,"n":8,"s":194.0,"e":225.3,"ln":12000,"ar":29.15,"o":"Escada helicoidal passa por fora – plataforma superior 211°","p":[0,0,0,0]},{"a":6,"n":9,"s":225.3,"e":256.6,"ln":12000,"ar":29.15,"o":"","p":[0,0,0,0]},{"a":6,"n":10,"s":256.6,"e":287.9,"ln":12000,"ar":29.15,"o":"","p":[0,0,0,0]},{"a":6,"n":11,"s":287.9,"e":319.3,"ln":12000,"ar":29.15,"o":"","p":[0,0,0,0]},{"a":6,"n":12,"s":319.3,"e":341.4,"ln":8417,"ar":20.44,"o":"Chapa de fechamento","p":[0,0,0,0]}];
 const STAGES=[["Hidrojato","--hidro"],["Fundo 1ª demão","--fundo"],["Intermediária 2ª demão","--inter"],["Acabamento","--acab"]];
 const FEATS=[[93,"o",1.0],[97,"o",2.08],[238,"o",0.875],[266.6,"o",0.525],[270,"o",0.5],[273.4,"o",0.525],[292.5,"o",0.875]];
 const R=21.95,H=2.44,GAP=0.03;
@@ -1201,7 +1201,9 @@ const sun=new THREE.DirectionalLight(0xffffff,0.55);sun.position.set(60,90,-30);
 const mats={};
 function col(v){return new THREE.Color(css(v));}
 const pal={};
-function readPal(){pal.steel=col('--steel');pal.edge=col('--steel-edge');STAGES.forEach(([,c],i)=>pal[i]=col(c));pal.fg=col('--fg');}
+function readPal(){pal.steel=col('--steel');pal.edge=col('--steel-edge');STAGES.forEach(([,c],i)=>pal[i]=col(c));pal.acab1=col('--acab1');pal.fg=col('--fg');}
+const hatch=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,64,64);x.strokeStyle='#c4c8c4';x.lineWidth=3;for(let k=-64;k<=64;k+=21){x.beginPath();x.moveTo(k,64);x.lineTo(k+64,0);x.stroke();}const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;return t;})();
+function PC(i,d){return i===3&&d.a===1?pal.acab1:pal[i];}
 readPal();
 function light(c,f){return c.clone().lerp(new THREE.Color(0xffffff),f);}
 
@@ -1226,7 +1228,7 @@ DATA.forEach(d=>{
   const w=((d.e-d.s)+360)%360, ts=Math.PI-(d.s+w)*Math.PI/180, tl=w*Math.PI/180;
   const hh=d.a===6?2.428:H;const g=new THREE.CylinderGeometry(R,R,hh-GAP,Math.max(3,Math.ceil(w)),1,true,ts+0.0012,tl-0.0024);
   const m=new THREE.MeshLambertMaterial({side:THREE.DoubleSide});
-  const mesh=new THREE.Mesh(g,m);mesh.position.y=(d.a-1)*H+hh/2;mesh.userData=d;scene.add(mesh);meshes.push(mesh);
+  const mesh=new THREE.Mesh(g,m);mesh.gT=g;mesh.gF=new THREE.CylinderGeometry(R,R,hh,Math.max(3,Math.ceil(w)),1,true,ts,tl);mesh.baseE=new THREE.Color(0);mesh.position.y=(d.a-1)*H+hh/2;mesh.userData=d;scene.add(mesh);meshes.push(mesh);
 });
 // marcadores: portas de limpeza e bocais no 1º anel
 FEATS.forEach(([b,t,el])=>{const r=b*Math.PI/180;const geo=new THREE.CylinderGeometry(0.22,0.22,0.6,16);
@@ -1262,6 +1264,11 @@ BVS.forEach(b0=>{const b=b0*Math.PI/180;
   const pn=new THREE.Mesh(new THREE.PlaneGeometry(S,S),new THREE.MeshLambertMaterial({color:0xFFFFFF,side:THREE.DoubleSide}));g.add(pn);
   g.position.set((R+0.25)*Math.sin(b),0.75,-(R+0.25)*Math.cos(b));g.lookAt(0,0.75,0);scene.add(g);
 });
+const NUM=[[216,'BV-1',0xE53935],[144,'BV-2',0xE53935],[70,'BV-3',0xE53935],[0,'BV-4',0xE53935],[297,'BV-5',0xE53935],[124,'PL-1',0x00ACC1],[304,'PL-2',0x00ACC1]];
+NUM.forEach(([a,t,c])=>{const b=a*Math.PI/180;const cv=document.createElement('canvas');cv.width=256;cv.height=96;const x=cv.getContext('2d');
+  x.font='700 64px "Barlow Condensed", Arial';x.textAlign='center';x.textBaseline='middle';x.lineWidth=10;x.strokeStyle='#ffffff';x.strokeText(t,128,50);x.fillStyle='#'+c.toString(16).padStart(6,'0');x.fillText(t,128,50);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv)}));
+  const pl=t.startsWith('PL'),rr=R+0.8;sp.position.set(rr*Math.sin(b),pl?2.3:1.9,-rr*Math.cos(b));sp.scale.set(2.4,0.9,1);scene.add(sp);});
 // rosa dos ventos
 function label(txt,b){const cv=document.createElement('canvas');cv.width=128;cv.height=128;const x=cv.getContext('2d');
   x.fillStyle='rgba(0,0,0,0)';x.fillRect(0,0,128,128);x.font='700 76px "Barlow Condensed", Arial';x.textAlign='center';x.textBaseline='middle';x.fillStyle='#'+pal.fg.getHexString();x.fillText(txt,64,68);
@@ -1273,11 +1280,12 @@ let view='geral';
 function colorOf(d){
   if(view==='geral'){let best=-1;for(let i=0;i<4;i++)if(d.p[i]>=1)best=i;
     let part=-1;for(let i=0;i<4;i++)if(d.p[i]>0&&d.p[i]<1)part=i;
-    if(part>best)return best>=0?pal[best].clone().lerp(pal[part],0.45):light(pal[part],0.55);
-    return best>=0?pal[best]:pal.steel;}
-  const i=+view,p=d.p[i];return p>=1?pal[i]:p>0?light(pal[i],0.6-0.35*p):pal.steel;
+    if(part>best)return best>=0?PC(best,d).clone().lerp(PC(part,d),0.45):light(PC(part,d),0.4);
+    return best>=0?PC(best,d):null;}
+  const i=+view,p=d.p[i];return p>=1?PC(i,d):p>0?PC(i,d).clone().lerp(pal.steel,0.5-0.3*p):null;
 }
-function paint(){meshes.forEach(m=>{m.material.color.copy(colorOf(m.userData));});}
+// não iniciada: cinza claro riscado, com a divisão das chapas; trabalhada: cor cheia, sem divisão
+function paint(){meshes.forEach(m=>{const c=colorOf(m.userData);if(!c){if(!m.userData._t){const t=hatch.clone();t.needsUpdate=true;const w=((m.userData.e-m.userData.s)+360)%360;t.repeat.set(Math.max(1,w*R*Math.PI/180/1.4),2.44/1.4);m.userData._t=t;}m.material.map=m.userData._t;m.material.color.set(0xEEF0EE);m.geometry=m.gT;m.baseE.setHex(0);}else{m.material.map=null;m.material.color.copy(c);m.geometry=m.gF;m.baseE.copy(c).multiplyScalar(c.equals(pal[3])?0.5:0.06);}m.material.emissive.copy(m.baseE);m.material.needsUpdate=true;});}
 paint();
 
 document.querySelectorAll('.views button').forEach(b=>b.addEventListener('click',()=>{view=b.dataset.v;document.querySelectorAll('.views button').forEach(x=>x.setAttribute('aria-pressed',x===b));paint();}));
@@ -1290,15 +1298,15 @@ document.querySelectorAll('[data-cam]').forEach(b=>b.addEventListener('click',()
 const ray=new THREE.Raycaster(),mouse=new THREE.Vector2(),tip=document.getElementById('tip');let hovered=null;
 function pick(ev){const r=canvas.getBoundingClientRect();mouse.x=((ev.clientX-r.left)/r.width)*2-1;mouse.y=-((ev.clientY-r.top)/r.height)*2+1;
   ray.setFromCamera(mouse,camera);const hit=ray.intersectObjects(meshes)[0];
-  if(hovered&&hovered!==hit?.object){hovered.material.emissive.setHex(0);hovered=null;}
+  if(hovered&&hovered!==hit?.object){hovered.material.emissive.copy(hovered.baseE);hovered=null;}
   if(!hit){tip.hidden=true;return;}
-  hovered=hit.object;hovered.material.emissive.setHex(0x222222);const d=hovered.userData;
+  hovered=hit.object;hovered.material.emissive.copy(hovered.baseE).add(new THREE.Color(0x333333));const d=hovered.userData;
   tip.innerHTML=`<b>Anel ${d.a} · Chapa ${d.n}</b><div class="r"><span>${fmt(d.s)}° a ${fmt(d.e)}°</span><span>${fmt(d.ar,1)} m²</span></div>`+
     (d.o?`<div>${d.o}</div>`:'')+STAGES.map(([n],i)=>`<div class="r"><span>${n.split(' ')[0]}${i===1?' 1ª':i===2?' 2ª':''}</span><span>${Math.round(d.p[i]*100)}%</span></div>`).join('');
   tip.hidden=false;let x=ev.clientX-r.left,y=ev.clientY-r.top;if(x>r.width-200)x-=210;if(y>r.height-170)y-=180;tip.style.left=x+'px';tip.style.top=y+'px';}
 let mode='hand',down=null,grabbing=false;
 const mHand=document.getElementById('mHand'),mInfo=document.getElementById('mInfo'),hint=document.getElementById('hint');
-function clearTip(){tip.hidden=true;if(hovered){hovered.material.emissive.setHex(0);hovered=null;}}
+function clearTip(){tip.hidden=true;if(hovered){hovered.material.emissive.copy(hovered.baseE);hovered=null;}}
 function setMode(m){mode=m;mHand.setAttribute('aria-pressed',m==='hand');mInfo.setAttribute('aria-pressed',m==='info');
   controls.enableRotate=controls.enablePan=(m==='hand');
   if(m==='info'){controls.autoRotate=false;spin.setAttribute('aria-pressed',false);}
@@ -1311,7 +1319,7 @@ canvas.addEventListener('pointermove',e=>{if(mode==='info'&&e.pointerType==='mou
 canvas.addEventListener('pointerup',e=>{const moved=down&&Math.hypot(e.clientX-down[0],e.clientY-down[1])>6;down=null;
   if(mode==='hand'){canvas.style.cursor='grab';return;}
   if(!moved)pick(e);});
-canvas.addEventListener('pointerleave',()=>{tip.hidden=true;if(hovered){hovered.material.emissive.setHex(0);hovered=null;}});
+canvas.addEventListener('pointerleave',()=>{tip.hidden=true;if(hovered){hovered.material.emissive.copy(hovered.baseE);hovered=null;}});
 
 function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
 new ResizeObserver(resize).observe(stage);resize();
