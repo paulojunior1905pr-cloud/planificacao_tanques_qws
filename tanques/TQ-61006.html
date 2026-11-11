@@ -105,7 +105,7 @@ aside{display:flex;flex-direction:column;gap:12px;min-width:0}
     <div class="card">
       <table class="rings" id="rings"><thead><tr><th>Anel</th><th>Hidro</th><th>Fundo</th><th>Inter.</th><th>Acab.</th></tr></thead><tbody></tbody></table>
     </div>
-    <p class="foot">Área externa por etapa: 4.532,7 m² (6 anéis × 2,44 m, Ø 98,5 m). Posições das chapas pelo desenho DE-5290.00-6311-511-TZJ-013 rev. F; 0° = Norte. Pelo conjunto geral TZJ-005 rev. E: amarelo = escada helicoidal (100° a 121°), anel vermelho = boca de visita BV-1 a BV-7, quadrado azul-claro = porta de limpeza PL-1 a PL-4 (numeradas a partir da escada, sentido anti-horário). Fonte do avanço: planilha de lançamentos.</p>
+    <p class="foot">Área externa por etapa: 4.532,7 m² (6 anéis × 2,44 m, Ø 98,5 m). Posições das chapas pelo desenho DE-5290.00-6311-511-TZJ-013 rev. F; 0° = Norte. Pelo conjunto geral TZJ-005 rev. K e TZJ-058 rev. D: amarelo = escada helicoidal (100° a 119°) e anel de contraventamento com passadiço (1067 mm abaixo do topo; abertura da escada a 114,85°), anel vermelho = boca de visita BV-1 a BV-7, quadrado azul-claro = porta de limpeza PL-1 a PL-4 (numeradas a partir da escada, sentido anti-horário). Fonte do avanço: planilha de lançamentos.</p>
   </aside>
 </div>
 </div>
@@ -1227,14 +1227,48 @@ DATA.forEach(d=>{
 FEATS.forEach(([b,t])=>{const r=b*Math.PI/180;const geo=t==="PL"?new THREE.BoxGeometry(1.4,1.4,0.6):new THREE.CylinderGeometry(0.45,0.45,0.9,16);
   const m=new THREE.Mesh(geo,new THREE.MeshLambertMaterial({color:0x30363b}));
   m.position.set((R+0.35)*Math.sin(r),t==="PL"?0.9:0.8,-(R+0.35)*Math.cos(r));m.lookAt(0,m.position.y,0);if(t!=="PL")m.rotateX(Math.PI/2);scene.add(m);});
-// escada helicoidal (item 46, DE-5290.00-6311-511-TZJ-005 rev. E): início a 100°, sobe no sentido horário até a plataforma a ~121°
-(function stair(){const b0=100,b1=118.5,top=6*H,N=64,RS=R+0.9,mat=new THREE.MeshLambertMaterial({color:0xD9B21B});
+// escada helicoidal (item 46, TZJ-005): início a 100°, sobe no sentido horário; passa pela abertura do anel de contraventamento (L.C. 114,85°, TZJ-058) e chega à plataforma no topo
+(function stair(){const b0=100,b1=116,top=6*H,N=64,RS=R+0.9,mat=new THREE.MeshLambertMaterial({color:0xD9B21B});
   const rail=[];for(let i=0;i<=N;i++){const f=i/N,b=(b0+(b1-b0)*f)*Math.PI/180,y=f*top;
     if(i<N){const st=new THREE.Mesh(new THREE.BoxGeometry(1.0,0.08,0.32),mat);st.position.set(RS*Math.sin(b),y+0.1,-RS*Math.cos(b));st.lookAt(0,st.position.y,0);scene.add(st);}
     rail.push(new THREE.Vector3((RS+0.55)*Math.sin(b),y+1.0,-(RS+0.55)*Math.cos(b)));}
   scene.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(rail),160,0.08,6,false),mat));
-  const bm=(b1+121)/2*Math.PI/180,len=(121-b1+1)*Math.PI/180*RS;
+  const bm=(b1+119)/2*Math.PI/180,len=(119-b1+1)*Math.PI/180*RS;
   const plat=new THREE.Mesh(new THREE.BoxGeometry(len,0.15,1.8),mat);plat.position.set((R+0.9)*Math.sin(bm),top+0.05,-(R+0.9)*Math.cos(bm));plat.lookAt(0,plat.position.y,0);scene.add(plat);
+})();
+
+// anel de contraventamento e passadiço (item 48 – DE-5290.00-6311-511-TZJ-058 rev. D)
+// piso 1000 mm (R 49259,5 → 50259,5), 1067 mm abaixo do topo do costado; parte especial de 10° com 2000 mm
+// e abertura 3500 x 906 mm para a escada (L.C. 114,85°); guarda-corpo 1100 mm; 140 mãos-francesas.
+const GIRDER=new THREE.Group();scene.add(GIRDER);
+(function girder(){
+  const k=R/49.2595, Ri=R, Ro=50.2595*k, Rx=51.2595*k, Y=6*H-1.067, C=114.85, S0=C-5, S1=C+5, CH=1.2;
+  const rOut=b=>{if(b<S0||b>S1)return Ro;if(b<S0+CH)return Ro+(Rx-Ro)*(b-S0)/CH;if(b>S1-CH)return Ro+(Rx-Ro)*(S1-b)/CH;return Rx;};
+  const P=(r,b)=>{const a=b*Math.PI/180;return [r*Math.sin(a),-r*Math.cos(a)];};
+  const outer=[];for(let i=0;i<720;i++){const b=i*0.5;outer.push([b,rOut(b)]);}
+  [S0+CH,S1-CH].forEach(b=>outer.push([b,rOut(b)]));outer.sort((a,b)=>a[0]-b[0]);
+  const sh=new THREE.Shape();outer.forEach(([b,r],i)=>{const [x,z]=P(r,b);i?sh.lineTo(x,z):sh.moveTo(x,z);});sh.closePath();
+  const inn=new THREE.Path();for(let i=0;i<=720;i++){const [x,z]=P(Ri,i*0.5);i?inn.lineTo(x,z):inn.moveTo(x,z);}sh.holes.push(inn);
+  const h0=C-2.036,h1=C+2.036,hr0=Ri+0.05*k,hr1=Ri+0.956*k,hole=new THREE.Path();
+  for(let b=h0;b<=h1+1e-6;b+=0.25){const [x,z]=P(hr0,b);b===h0?hole.moveTo(x,z):hole.lineTo(x,z);}
+  for(let b=h1;b>=h0-1e-6;b-=0.25){const [x,z]=P(hr1,b);hole.lineTo(x,z);}hole.closePath();sh.holes.push(hole);
+  const steel=new THREE.MeshLambertMaterial({color:0xC9A418,side:THREE.DoubleSide}),rail=new THREE.MeshLambertMaterial({color:0xD9B21B});
+  const deck=new THREE.Mesh(new THREE.ExtrudeGeometry(sh,{depth:0.06,bevelEnabled:false,curveSegments:1}),steel);
+  deck.rotation.x=Math.PI/2;deck.position.y=Y+0.06;GIRDER.add(deck);
+  // aba externa (cantoneira/chapa de borda, 300 mm)
+  const V=(r,b,y)=>{const [x,z]=P(r,b);return new THREE.Vector3(x,y,z);};
+  for(let i=0;i<outer.length;i++){const [b1,r1]=outer[i],[b2,r2]=outer[(i+1)%outer.length];
+    const a=V(r1,b1,Y),c=V(r2,b2,Y),len=a.distanceTo(c);if(len<1e-3)continue;
+    const m=new THREE.Mesh(new THREE.BoxGeometry(len,0.3,0.03),steel);m.position.copy(a).add(c).multiplyScalar(0.5);m.position.y=Y-0.15+0.06;
+    m.rotation.y=-Math.atan2(c.z-a.z,c.x-a.x);GIRDER.add(m);}
+  // guarda-corpo: corrimão a 1100 e travessa a 560
+  const ptsA=[],ptsB=[];outer.forEach(([b,r])=>{ptsA.push(V(r-0.03,b,Y+0.06+1.1));ptsB.push(V(r-0.03,b,Y+0.06+0.56));});
+  [ptsA,ptsB].forEach(pts=>GIRDER.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts,true,'centripetal'),1440,0.035,5,true),rail)));
+  for(let i=0;i<140;i++){const b=i*360/140,r=rOut(b)-0.03,p=V(r,b,Y+0.06+0.55);
+    const m=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,1.1,5),rail);m.position.copy(p);GIRDER.add(m);
+    // mão-francesa: do costado (695 mm abaixo) até o piso (~900 mm do costado)
+    const a=V(Ri,b,Y-0.695),c=V(Ri+0.9*k,b,Y),br=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,a.distanceTo(c),5),steel);
+    br.position.copy(a).add(c).multiplyScalar(0.5);br.lookAt(c);br.rotateX(Math.PI/2);GIRDER.add(br);}
 })();
 // bocas de visita do costado (item 18, 24", eixo a 760 mm) – destaque
 const BVS=[2.39,51,106.37,154.42,203.62,255,307.63];
