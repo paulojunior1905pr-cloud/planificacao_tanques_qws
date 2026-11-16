@@ -1350,3 +1350,50 @@ function retheme(){readPal();paint();addLabels();}
 mq.addEventListener?.('change',retheme);
 new MutationObserver(retheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 </script>
+<!-- avanco-semanal:inicio -->
+<style>
+.lev{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.lev-cap{font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lev-seg{display:inline-flex;max-width:100%;overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+.lev-seg button{font:500 12px var(--mono);color:var(--fg);background:transparent;border:0;padding:8px 14px;display:flex;flex-direction:column;align-items:flex-start;gap:2px;cursor:pointer;white-space:nowrap}
+.lev-seg button+button{border-left:1px solid var(--line)}
+.lev-seg button small{font:600 10px var(--mono);letter-spacing:.08em;color:var(--muted)}
+.lev-seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.lev-seg button[aria-pressed="true"] small{color:var(--bg);opacity:.7}
+.lev-seg button:focus-visible{outline:2px solid var(--hidro);outline-offset:-2px}
+.lev-d{font:600 11px var(--mono);color:#2F7D4F;background:rgba(47,125,79,.12);border-radius:3px;padding:2px 6px;margin-right:8px;white-space:nowrap}
+.lev-d.z{color:var(--muted);background:rgba(127,135,142,.14)}
+.lev-g{margin-top:6px}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .lev-d:not(.z){color:#7BC596;background:rgba(123,197,150,.14)}}
+:root[data-theme="dark"] .lev-d:not(.z){color:#7BC596;background:rgba(123,197,150,.14)}
+@media (max-width:900px){.lev{align-items:flex-start}}
+</style>
+<script>
+(function(){
+const HIST={"datas":["2026-11-10","2026-11-14"],"p":{"2026-11-10":[[1.0,0,0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0.6,0],[1.0,1.0,1.0,0],[1.0,1.0,0,0],[1.0,1.0,1.0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0.2,0],[1.0,1.0,1.0,0],[1.0,1.0,1.0,0],[1.0,1.0,1.0,0],[1.0,1.0,1.0,0],[1.0,1.0,1.0,0],[1.0,1.0,1.0,0],[1.0,1.0,1.0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0.25,0,0,0],[1.0,0,0,0],[1.0,0,0,0],[1.0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],"2026-11-14":[[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0.6,0],[1.0,1.0,1.0,0],[1.0,1.0,0,0],[1.0,1.0,1.0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[1.0,1.0,0.2,0],[1.0,1.0,1.0,0],[1.0,1.0,1.0,0],[1.0,1.0,1.0,0],[1.0,1.0,1.0,0],[1.0,1.0,1.0,0],[1.0,1.0,1.0,0],[1.0,1.0,1.0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0.5,0,0,0],[1.0,0,0,0],[1.0,0,0,0],[1.0,0.5,0,0],[1.0,1.0,0,0],[1.0,1.0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]}};
+const datas=HIST.datas;if(!datas.length||typeof DATA==='undefined')return;
+const dm=s=>s.slice(8,10)+'/'+s.slice(5,7);
+const sem=s=>{const d=new Date(s+'T12:00:00Z');const t=new Date(d);t.setUTCDate(d.getUTCDate()+3-((d.getUTCDay()+6)%7));const y=new Date(Date.UTC(t.getUTCFullYear(),0,4));return 1+Math.round(((t-y)/864e5-3+((y.getUTCDay()+6)%7))/7);};
+const tot=DATA.reduce((s,d)=>s+d.ar,0);
+const pcts=P=>{const st=[0,1,2,3].map(i=>DATA.reduce((s,d,j)=>s+d.ar*P[j][i],0)/tot*100);return {st,g:st.reduce((a,b)=>a+b,0)/4};};
+const f1=x=>x.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1});
+const chip=v=>`<span class="lev-d${v<0.05?' z':''}">${v<0.05?'+0,0':'+'+f1(v)} pp</span>`;
+const box=document.querySelector('header .date');
+box.className='lev';
+box.innerHTML='<span class="lev-cap">Levantamento</span><div class="lev-seg" role="group" aria-label="Escolher o levantamento">'+
+  datas.map((d,k)=>`<button data-k="${k}" aria-pressed="false"><small>SEM ${sem(d)}</small>${dm(d)}</button>`).join('')+'</div>';
+const gl=document.querySelector('.global .lbl');const gd=document.createElement('div');gd.className='lev-g';gl.parentNode.insertBefore(gd,gl.nextSibling);
+function sel(k){
+  const P=HIST.p[datas[k]];DATA.forEach((d,j)=>{d.p=P[j].slice();});
+  kpis();paint();
+  box.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.k===k));
+  if(k>0){const a=pcts(HIST.p[datas[k-1]]),b=pcts(P);
+    document.querySelectorAll('#stages .pct').forEach((e,i)=>e.insertAdjacentHTML('afterbegin',chip(b.st[i]-a.st[i])));
+    gd.innerHTML=chip(b.g-a.g).replace('pp</span>','pp desde '+dm(datas[k-1])+'</span>');}
+  else gd.innerHTML='<span class="lev-d z">1º levantamento</span>';
+}
+box.addEventListener('click',e=>{const b=e.target.closest('button[data-k]');if(b)sel(+b.dataset.k);});
+sel(datas.length-1);
+})();
+</script>
+<!-- avanco-semanal:fim -->
