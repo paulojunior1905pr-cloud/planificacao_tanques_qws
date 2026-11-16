@@ -1,4 +1,5 @@
 <meta charset="utf-8">
+<script id="tema-cedo">try{var t=localStorage.getItem("tema-tanques");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TQ-69024 em 3D</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -72,6 +73,7 @@ aside{display:flex;flex-direction:column;gap:12px;min-width:0}
 <header>
   <div>
     <a id="voltar-tanques" href="../" style="display:inline-block;margin:0 0 6px;padding:4px 10px;border:1px solid currentColor;border-radius:6px;font:600 13px system-ui,sans-serif;color:inherit;text-decoration:none;opacity:.8">&larr; Tanques</a>
+    <button id="tema-toggle" type="button" style="display:inline-block;margin:0 0 6px 6px;padding:4px 10px;border:1px solid currentColor;border-radius:6px;font:600 13px system-ui,sans-serif;color:inherit;background:transparent;cursor:pointer;opacity:.8">Tema</button>
     <div class="eyebrow">RNEST · Tancagem de Diesel Final · Área 69 · Pintura externa do costado</div>
     <h1>TQ-69024 em 3D</h1>
   </div>
@@ -1350,3 +1352,13 @@ function retheme(){readPal();paint();addLabels();}
 mq.addEventListener?.('change',retheme);
 new MutationObserver(retheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 </script>
+
+
+<script id="tema-logica">(function(){
+var b=document.getElementById("tema-toggle"),r=document.documentElement,mq=matchMedia("(prefers-color-scheme: dark)");
+function atual(){var t=r.getAttribute("data-theme");return t==="dark"||t==="light"?t:(mq.matches?"dark":"light")}
+function rot(){var e=atual()==="dark";b.textContent=e?"☀ Claro":"☾ Escuro";b.title=e?"Mudar para o tema claro":"Mudar para o tema escuro";b.setAttribute("aria-label",b.title)}
+b.addEventListener("click",function(){var n=atual()==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("tema-tanques",n)}catch(e){}rot()});
+mq.addEventListener&&mq.addEventListener("change",rot);
+addEventListener("storage",function(e){if(e.key==="tema-tanques"&&(e.newValue==="dark"||e.newValue==="light")){r.setAttribute("data-theme",e.newValue);rot()}});
+rot()})();</script>
