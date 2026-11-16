@@ -19,5 +19,12 @@
     "desenho": "DE-5290.00-6319-511-MFQ-001",
     "modelo": "tanques/TQ-69024.html",
     "imagem": "imagens/TQ-69024.png"
+  },
+  {
+    "id": "TQ-62025",
+    "descricao": "Remoção do isolamento térmico · Ø 53,4 m",
+    "desenho": "DE-5290.00-6314-511-KFH-001",
+    "modelo": "tanques/TQ-62025.html",
+    "imagem": "imagens/TQ-62025.png"
   }
 ]
