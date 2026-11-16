@@ -25,10 +25,3 @@ Apague o bloco dele em `tanques.json` (e, se quiser, os arquivos em `tanques/` e
 ## Botão "← Tanques"
 Cada modelo tem um botão para voltar à página inicial. Ao adicionar um modelo novo, rode
 `python ferramentas/botao_voltar.py` para colocar o botão nele (não duplica nos que já têm).
-
-## Seletor de levantamento (avanço por semana)
-Cada modelo mostra no cabeçalho os levantamentos (SEM nn · dd/mm). Ao trocar a data, o 3D, os
-indicadores e a tabela por anel mostram a situação daquele dia, com o ganho desde o levantamento anterior.
-Depois de atualizar um modelo com um levantamento novo, rode:
-`python ferramentas/avanco_semanal.py tanques/TQ-xxxxx.html Planificacao_Pintura_Costado_TQ-xxxxx.xlsx`
-(lê a aba Lançamentos; pode rodar de novo, substitui o bloco anterior).
