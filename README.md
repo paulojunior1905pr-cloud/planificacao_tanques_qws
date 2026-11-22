@@ -33,7 +33,7 @@ Ao adicionar um modelo novo, rode `python ferramentas/tema.py` para colocar o bo
 
 ## Botão "⤓ Planificação (PNG)"
 Cada modelo tem um botão que gera no navegador a imagem da planificação no layout da planilha
-(aba "Planificação": 4 setores de 90°, um anel por linha, cada chapa na posição real) e baixa o PNG
+(faixa única de 360°, um anel por linha, cada chapa na posição real, sem número de chapa) e baixa o PNG
 (`TQ-xxxxx_planificacao_DD-MM-AAAA.png`). Usa os dados que já estão na página; o desenho fica em `planificacao.js`.
 Ao adicionar um modelo novo, acrescente a faixa da escada em `ferramentas/botao_planificacao.py` e rode
 `python ferramentas/botao_planificacao.py` (não duplica).

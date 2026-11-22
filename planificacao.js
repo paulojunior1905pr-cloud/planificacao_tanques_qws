@@ -53,9 +53,10 @@
   }
 
   function desenhar(D) {
-    var SECT = [[45, 'Setor Norte – 45° a 315°'], [135, 'Setor Leste – 135° a 45°'], [225, 'Setor Sul – 225° a 135°'], [315, 'Setor Oeste – 315° a 225°']];
-    var W = 2400, PADL = 150, PADR = 50, GW = W - PADL - PADR, RH = D.rings > 3 ? 58 : 80, NR = D.rings;
-    var HEAD = 150, SECH = 46 + 54 + NR * RH + 70, FOOT = 170;
+    // imagem única: faixa contínua de 360° (360° à esquerda, 0° = Norte à direita), sem número de chapa
+    var SPAN = 360, SECT = [[360, 'Vista externa · 360° à esquerda → 0° (Norte) à direita']];
+    var W = 3840, PADL = 150, PADR = 60, GW = W - PADL - PADR, RH = D.rings > 3 ? 80 : 120, NR = D.rings;
+    var HEAD = 150, SECH = (SECT.length > 1 ? 46 : 10) + 54 + NR * RH + 90, FOOT = 190;
     var Hh = HEAD + SECT.length * SECH + FOOT;
     var cv = document.createElement('canvas'); cv.width = W; cv.height = Hh;
     var x = cv.getContext('2d');
@@ -72,33 +73,33 @@
     x.fillStyle = '#FFFFFF'; x.font = '700 50px ' + FONT_D; x.textBaseline = 'middle';
     x.fillText(D.tq + ' · ' + (D.iso ? 'Remoção do isolamento térmico do costado' : 'Pintura externa do costado') + ' – planificação', 40, 50);
     x.font = '500 24px ' + FONT_B; x.fillStyle = '#C9CED4'; x.textAlign = 'right';
-    x.fillText('Vista externa · cada retângulo é uma chapa, na posição real', W - 40, 50);
+    x.fillText('Vista externa · 360° à esquerda → 0° (Norte) à direita', W - 40, 50);
     x.textAlign = 'left';
-    x.font = 'italic 400 20px ' + FONT_B; x.fillStyle = C.muted;
+    x.font = 'italic 400 26px ' + FONT_B; x.fillStyle = C.muted;
     x.fillText(D.iso ? 'Verde = isolamento removido · tom claro = remoção em andamento · hachurado = isolamento ainda instalado. BV-1 sob a escada; numeração no sentido anti-horário visto de cima.'
-      : 'Cor = última etapa concluída na chapa · tom intermediário = etapa seguinte em andamento · nº = chapa. BV-1 sob a escada; numeração no sentido anti-horário visto de cima.', 40, 126);
+      : 'Cor = última etapa concluída na chapa · tom intermediário = etapa seguinte em andamento · hachurado com divisões = chapa não iniciada. BV-1 sob a escada; numeração no sentido anti-horário visto de cima.', 40, 126);
 
     var esc = CFG.escada;
     SECT.forEach(function (S, si) {
-      var hi = S[0], y0 = HEAD + si * SECH, gy = y0 + 46 + 54, gh = NR * RH;
-      var X = function (ang) { return PADL + (((hi - ang) % 360 + 360) % 360) / 90 * GW; };
-      x.fillStyle = C.ink; x.font = '700 30px ' + FONT_D; x.textBaseline = 'alphabetic'; x.textAlign = 'left'; x.fillText(S[1], PADL, y0 + 32);
+      var hi = S[0], y0 = HEAD + si * SECH, gy = y0 + (SECT.length > 1 ? 46 : 10) + 54, gh = NR * RH;
+      var X = function (ang) { return PADL + (((hi - ang) % 360 + 360) % 360) / SPAN * GW; };
+      x.fillStyle = C.ink; x.font = '700 30px ' + FONT_D; x.textBaseline = 'alphabetic'; x.textAlign = 'left'; if (SECT.length > 1) x.fillText(S[1], PADL, y0 + 32);
       // ângulos a cada 10°
-      x.font = '600 17px ' + FONT_M; x.textAlign = 'center'; x.fillStyle = C.muted;
-      for (var k = 0; k <= 9; k++) { var ang = ((hi - k * 10) % 360 + 360) % 360, xx = PADL + k * 10 / 90 * GW;
-        x.fillText(ang + '°', xx, gy - 10); x.fillRect(xx - 0.5, gy - 6, 1, 6); }
+      x.font = '600 22px ' + FONT_M; x.textAlign = 'center'; x.fillStyle = C.muted;
+      for (var k = 0; k <= SPAN / 10; k++) { var ang = ((hi - k * 10) % 360 + 360) % 360, xx = PADL + k * 10 / SPAN * GW;
+        x.fillText((k === 0 ? hi : ang) + '°', xx, gy - 10); x.fillRect(xx - 0.5, gy - 6, 1, 6); }
       // escada
       if (esc) {
         var a0 = Math.min(esc[0], esc[1]), a1 = Math.max(esc[0], esc[1]);
         [-360, 0, 360].forEach(function (sh) {
-          var l = PADL + (hi - (a1 + sh)) / 90 * GW, r = PADL + (hi - (a0 + sh)) / 90 * GW;
+          var l = PADL + (hi - (a1 + sh)) / SPAN * GW, r = PADL + (hi - (a0 + sh)) / SPAN * GW;
           l = Math.max(l, PADL); r = Math.min(r, PADL + GW); if (r - l < 2) return;
           x.fillStyle = 'rgba(224,168,0,0.22)'; x.fillRect(l, gy - 62, r - l, 26); x.fillStyle = C.escLine; x.fillRect(l, gy - 40, r - l, 4);
           x.fillStyle = C.esc; x.font = '700 20px ' + FONT_D; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('ESCADA', (l + r) / 2, gy - 50); x.textBaseline = 'alphabetic';
         });
       }
       // anéis
-      x.textAlign = 'right'; x.textBaseline = 'middle'; x.font = '700 22px ' + FONT_D; x.fillStyle = C.ink;
+      x.textAlign = 'right'; x.textBaseline = 'middle'; x.font = '700 28px ' + FONT_D; x.fillStyle = C.ink;
       for (var a = 1; a <= NR; a++) x.fillText(a + 'º anel', PADL - 14, gy + (NR - a + 0.5) * RH);
       // chapas
       x.save(); x.beginPath(); x.rect(PADL, gy, GW, gh); x.clip();
@@ -106,7 +107,7 @@
       D.DATA.forEach(function (d) {
         var w = ((d.e - d.s) % 360 + 360) % 360, ry = gy + (NR - d.a) * RH, c = corChapa(d, D.iso);
         [-360, 0, 360].forEach(function (sh) {
-          var lx = PADL + (((hi - d.e) % 360 + 360) % 360 + sh) / 90 * GW, pw = w / 90 * GW;
+          var lx = PADL + (((hi - d.e) % 360 + 360) % 360 + sh) / SPAN * GW, pw = w / SPAN * GW;
           if (lx > PADL + GW || lx + pw < PADL) return;
           if (c) { x.fillStyle = c; x.fillRect(lx - 0.6, ry, pw + 1.2, RH); }
           else { x.fillStyle = hatch; x.fillRect(lx, ry, pw, RH); x.strokeStyle = C.niEdge; x.lineWidth = 1.6; x.strokeRect(lx + 0.8, ry + 0.8, pw - 1.6, RH - 1.6); }
@@ -114,8 +115,7 @@
           if (Math.min(PADL + GW, lx + pw) - Math.max(PADL, lx) > 22) nums.push([cx, ry + RH / 2, d.n, c]);
         });
       });
-      x.font = '600 17px ' + FONT_M; x.textAlign = 'center'; x.textBaseline = 'middle';
-      nums.forEach(function (n) {
+      if (CFG.numeros) nums.forEach(function (n) {
         var dark = n[3] && lum(n[3]) < 0.55;
         x.fillStyle = dark ? 'rgba(255,255,255,0.85)' : 'rgba(27,36,48,0.75)';
         if (!n[3]) { x.fillStyle = 'rgba(255,255,255,0.9)'; x.fillRect(n[0] - 15, n[1] - 11, 30, 22); x.fillStyle = 'rgba(27,36,48,0.8)'; }
@@ -128,7 +128,7 @@
       x.strokeStyle = C.frame; x.lineWidth = 3; x.strokeRect(PADL, gy, GW, gh);
       // BV / PL / bocais abaixo do 1º anel
       var by = gy + gh, items = [];
-      D.pts.forEach(function (p) { var d = (((hi - p[0]) % 360) + 360) % 360; if (d <= 90) items.push([PADL + d / 90 * GW, p[1]]); });
+      D.pts.forEach(function (p) { var d = (((hi - p[0]) % 360) + 360) % 360; if (d <= SPAN) items.push([PADL + d / SPAN * GW, p[1]]); });
       items.sort(function (a, b) { return a[0] - b[0]; });
       var prev = -999, lvl = 0;
       items.forEach(function (it) {
@@ -138,9 +138,9 @@
         x.fillStyle = '#FFFFFF'; x.lineWidth = 2.5;
         if (it[1].indexOf('PL') === 0) { x.fillRect(it[0] - 9, by - 9, 18, 18); x.strokeRect(it[0] - 9, by - 9, 18, 18); }
         else { x.beginPath(); x.arc(it[0], by, 8, 0, 7); x.fill(); x.stroke(); }
-        x.fillStyle = col; x.font = '700 22px ' + FONT_D; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(it[1], it[0], ty);
+        x.fillStyle = col; x.font = '700 28px ' + FONT_D; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(it[1], it[0], ty);
       });
-      D.boc.forEach(function (b) { var d = (((hi - b) % 360) + 360) % 360; if (d > 90) return; var bx = PADL + d / 90 * GW;
+      D.boc.forEach(function (b) { var d = (((hi - b) % 360) + 360) % 360; if (d > SPAN) return; var bx = PADL + d / SPAN * GW;
         x.fillStyle = '#FFFFFF'; x.strokeStyle = '#30363b'; x.lineWidth = 1.6; x.beginPath(); x.arc(bx, by - RH * 0.3, 5, 0, 7); x.fill(); x.stroke(); });
     });
 
@@ -152,25 +152,25 @@
       : [['Hidrojato', C.hidro], ['Fundo 1ª demão', C.fundo], ['2ª demão', C.inter], ['Acabamento', C.acab]].map(function (e, i) {
         return [e[0], e[1], D.DATA.reduce(function (s, d) { return s + d.ar * d.p[i]; }, 0) / tot]; });
     x.textBaseline = 'middle'; x.textAlign = 'left';
-    x.fillStyle = C.ink; x.font = '700 30px ' + FONT_D; x.fillText('Avanço:', 40, fy + 30);
-    var cx = 160;
+    x.fillStyle = C.ink; x.font = '700 40px ' + FONT_D; x.fillText('Avanço:', 40, fy + 30);
+    var cx = 200;
     av.forEach(function (e) {
-      x.fillStyle = e[1]; x.fillRect(cx, fy + 16, 28, 28); x.strokeStyle = '#333'; x.lineWidth = 1; x.strokeRect(cx + 0.5, fy + 16.5, 27, 27);
-      x.fillStyle = C.ink; x.font = '600 28px ' + FONT_D; var t = e[0] + ' ' + fmt(e[2] * 100, 1) + '%'; x.fillText(t, cx + 38, fy + 31);
-      cx += 38 + x.measureText(t).width + 40;
+      x.fillStyle = e[1]; x.fillRect(cx, fy + 12, 36, 36); x.strokeStyle = '#333'; x.lineWidth = 1; x.strokeRect(cx + 0.5, fy + 12.5, 35, 35);
+      x.fillStyle = C.ink; x.font = '600 38px ' + FONT_D; var t = e[0] + ' ' + fmt(e[2] * 100, 1) + '%'; x.fillText(t, cx + 48, fy + 31);
+      cx += 48 + x.measureText(t).width + 50;
     });
     var leg = D.iso ? [['Isolamento instalado', null], ['Em andamento', mix(C.ni, C.rem, 0.45)], ['Removido', C.rem]]
       : [['Não iniciada', null], ['Hidrojato', C.hidro], ['Fundo 1ª demão', C.fundo], ['2ª demão', C.inter], ['Acabamento (anéis 2 em diante)', C.acab], ['Acabamento (anel 1)', C.acab1], ['Tom intermediário = etapa seguinte em andamento', mix(C.fundo, C.inter, 0.5)]];
-    cx = 40; var ly = fy + 86;
-    x.font = '500 22px ' + FONT_B;
+    cx = 40; var ly = fy + 100;
+    x.font = '500 30px ' + FONT_B;
     leg.forEach(function (e) {
-      var w = 30 + 10 + x.measureText(e[0]).width + 34;
+      var w = 40 + 12 + x.measureText(e[0]).width + 44;
       if (cx + w > W - 40) { cx = 40; ly += 40; }
-      if (e[1]) { x.fillStyle = e[1]; x.fillRect(cx, ly - 13, 30, 26); } else { x.fillStyle = hatch; x.fillRect(cx, ly - 13, 30, 26); }
-      x.strokeStyle = '#555'; x.lineWidth = 1; x.strokeRect(cx + 0.5, ly - 12.5, 29, 25);
-      x.fillStyle = C.ink; x.fillText(e[0], cx + 40, ly + 1); cx += w;
+      x.fillStyle = e[1] || hatch; x.fillRect(cx, ly - 17, 40, 34);
+      x.strokeStyle = '#555'; x.lineWidth = 1; x.strokeRect(cx + 0.5, ly - 16.5, 39, 33);
+      x.fillStyle = C.ink; x.fillText(e[0], cx + 52, ly + 1); cx += w;
     });
-    if (D.sit) { x.font = '400 20px ' + FONT_M; x.fillStyle = C.muted; x.textAlign = 'right'; x.fillText(D.sit, W - 40, fy + 31); }
+    if (D.sit) { x.font = '400 26px ' + FONT_M; x.fillStyle = C.muted; x.textAlign = 'right'; x.fillText(D.sit, W - 40, fy + 31); }
     return cv;
   }
 
