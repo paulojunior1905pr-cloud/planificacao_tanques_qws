@@ -30,3 +30,10 @@ Cada modelo tem um botão para voltar à página inicial. Ao adicionar um modelo
 A página inicial e cada modelo têm um botão "☾ Escuro / ☀ Claro". A escolha fica guardada no navegador
 e vale para todas as páginas (sem escolha, segue o tema do aparelho). As cores das etapas não mudam.
 Ao adicionar um modelo novo, rode `python ferramentas/tema.py` para colocar o botão nele (não duplica).
+
+## Botão "⤓ Planificação (PNG)"
+Cada modelo tem um botão que gera no navegador a imagem da planificação no layout da planilha
+(aba "Planificação": 4 setores de 90°, um anel por linha, cada chapa na posição real) e baixa o PNG
+(`TQ-xxxxx_planificacao_DD-MM-AAAA.png`). Usa os dados que já estão na página; o desenho fica em `planificacao.js`.
+Ao adicionar um modelo novo, acrescente a faixa da escada em `ferramentas/botao_planificacao.py` e rode
+`python ferramentas/botao_planificacao.py` (não duplica).
