@@ -185,10 +185,19 @@
       try {
         var D = dados(), cv = desenhar(D), name = nomeArquivo(D.tq);
         cv.toBlob(function (b) {
-          var a = document.createElement('a'); a.download = name; a.href = URL.createObjectURL(b);
-          document.body.appendChild(a); a.click(); a.remove();
-          setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
-          btn.textContent = old; btn.disabled = false;
+          var fim = function () { btn.textContent = old; btn.disabled = false; };
+          var direto = function () {
+            var a = document.createElement('a'); a.download = name; a.href = URL.createObjectURL(b);
+            document.body.appendChild(a); a.click(); a.remove();
+            setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000); fim();
+          };
+          // dentro do claude.ai (página de teste) o download passa pela confirmação do próprio claude.ai
+          if (window.claude && window.claude.use) {
+            window.claude.use('downloads').then(function (dl) {
+              if (!dl) return direto();
+              dl.save({ filename: name, data: b }).then(fim, fim);
+            }, direto);
+          } else direto();
         }, 'image/png');
       } catch (e) { console.error(e); btn.textContent = old; btn.disabled = false; alert('Não foi possível gerar a imagem.'); }
     };
