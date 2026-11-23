@@ -245,8 +245,8 @@
       txt('Avanço global', X + 28, cy + 44, '600 32px ' + FONT_B, '#C9CED4'); txt('média das 3 etapas', X + 28, cy + 82, '400 24px ' + FONT_B, '#9AA5B0');
       x.textAlign = 'right'; txt(pc(glob), X + 500, cy + 100, '700 80px ' + FONT_D, '#FFFFFF'); x.textAlign = 'left';
       var lx = X + 560, ly = cy + 26;
-      [[hatch, 'Não iniciada'], [andam, 'Em andamento (riscos na cor da etapa)'], [null, 'Acabamento: preto no anel 1, branco nos demais']].forEach(function (e, k) {
-        var Y = ly + k * 48; if (e[0]) sw(e[0], lx, Y - 18, 54, 38); else acabSw(lx, Y - 18, 54, 38); txt(e[1], lx + 70, Y + 1, '500 28px ' + FONT_B); });
+      [[hatch, 'Não iniciada'], [riscos(x, '#FFFFFF', C.muted), 'Em andamento']].forEach(function (e, k) {
+        var Y = ly + 22 + k * 58; if (e[0]) sw(e[0], lx, Y - 18, 54, 38); else acabSw(lx, Y - 18, 54, 38); txt(e[1], lx + 70, Y + 1, '500 28px ' + FONT_B); });
     }
     if (D.sit) { x.textAlign = 'right'; txt(D.sit, W - 40, Hh - 26, '400 24px ' + FONT_M, C.muted); x.textAlign = 'left'; }
     return cv;
