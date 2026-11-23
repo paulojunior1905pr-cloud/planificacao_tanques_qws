@@ -63,7 +63,7 @@
   }
 
   function desenhar(D) {
-    var ESTILO = (window.PLANIF_LEG || CFG.legenda || 'A');
+    var ESTILO = (window.PLANIF_LEG || CFG.legenda || 'C');
     // imagem única: faixa contínua de 360° (360° à esquerda, 0° = Norte à direita), sem número de chapa
     var SPAN = 360, SECT = [[360, 'Vista externa · 360° à esquerda → 0° (Norte) à direita']];
     var W = 3840, PADL = 150, PADR = 60, GW = W - PADL - PADR, RH = D.rings > 3 ? 80 : 120, NR = D.rings;
