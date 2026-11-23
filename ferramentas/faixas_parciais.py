@@ -22,12 +22,12 @@ for fn in sys.argv[2:]:
     # faixa 3D: depois do listener das vistas
     anchor="document.querySelectorAll('.views button').forEach(b=>b.addEventListener('click',()=>{view=b.dataset.v;"
     k=t.index(anchor)
-    band=("// faixas parciais (topo do anel): superfície na cor da etapa com contorno vermelho\n"
+    band=("// faixas parciais (topo do anel): superfície na cor da etapa com borda cinza fina\n"
       "const BANDS=FAIXAS.map(f=>{const w=f.ate-f.de,ts=Math.PI-f.ate*Math.PI/180,tl=w*Math.PI/180,bh=f.t*H,yTop=f.a*H,grp=new THREE.Group();\n"
       " const surf=new THREE.Mesh(new THREE.CylinderGeometry(R+0.04,R+0.04,bh,Math.ceil(w)*2,1,true,ts,tl),new THREE.MeshLambertMaterial({side:THREE.DoubleSide}));surf.position.y=yTop-bh/2;grp.add(surf);\n"
-      " const red=new THREE.MeshBasicMaterial({color:0xD32F2F,side:THREE.DoubleSide});\n"
-      " [yTop-0.07,yTop-bh+0.07].forEach(y=>{const r=new THREE.Mesh(new THREE.CylinderGeometry(R+0.09,R+0.09,0.14,Math.ceil(w)*2,1,true,ts,tl),red);r.position.y=y;grp.add(r);});\n"
-      " [f.de,f.ate].forEach(b=>{const r=b*Math.PI/180,m=new THREE.Mesh(new THREE.BoxGeometry(0.16,bh,0.16),red);m.position.set((R+0.09)*Math.sin(r),yTop-bh/2,-(R+0.09)*Math.cos(r));grp.add(m);});\n"
+      " const red=new THREE.MeshBasicMaterial({color:0x8A9096,side:THREE.DoubleSide});\n"
+      " [yTop-0.025,yTop-bh+0.025].forEach(y=>{const r=new THREE.Mesh(new THREE.CylinderGeometry(R+0.06,R+0.06,0.05,Math.ceil(w)*2,1,true,ts,tl),red);r.position.y=y;grp.add(r);});\n"
+      " [f.de,f.ate].forEach(b=>{const r=b*Math.PI/180,m=new THREE.Mesh(new THREE.BoxGeometry(0.06,bh,0.06),red);m.position.set((R+0.06)*Math.sin(r),yTop-bh/2,-(R+0.09)*Math.cos(r));grp.add(m);});\n"
       " scene.add(grp);return{f,grp,surf};});\n"
       "function paintBands(){BANDS.forEach(({f,grp,surf})=>{const i=view==='geral'?f.e:+view;grp.visible=i<=f.e;if(!grp.visible)return;const c=PC(i,{a:f.a});surf.material.color.copy(c);surf.material.emissive=c.clone().multiplyScalar(i===STAGES.length-1?0.5:0.06);surf.material.needsUpdate=true;});}\n"
       "{const _p=paint;paint=function(){_p();paintBands();};}paintBands();\n")
