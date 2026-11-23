@@ -3,7 +3,7 @@
 import re,sys,json
 fx=json.load(open(sys.argv[1]))["faixas"]
 ET=["Hidrojato","Fundo","Acabamento"]
-FA=[{"a":f["anel"],"e":ET.index(f["etapa"]),"de":f["de"],"ate":f["ate"],"t":f["frac_topo"],"txt":"Acabamento acima do contraventamento"} for f in fx]
+FA=[{"a":f["anel"],"e":ET.index(f["etapa"]),"de":f["de"],"ate":f["ate"],"t":f["frac_topo"]} for f in fx]
 for fn in sys.argv[2:]:
     t=open(fn).read()
     assert 'const FAIXAS' not in t
@@ -19,10 +19,6 @@ for fn in sys.argv[2:]:
     i=t.index('function colorOf(d){'); j=t.index('function paint(){')
     seg=t[i:j].replace('d.p[i]','PV(d)[i]')
     t=t[:i]+seg+t[j:]
-    # tooltip
-    old='(d.o?`<div>${d.o}</div>`:\'\')'
-    assert old in t
-    t=t.replace(old,old+"+(d.fx?`<div>Faixa superior: ${FAIXAS.filter(f=>f.a===d.a).map(f=>f.txt).join(', ')}</div>`:'')",1)
     # faixa 3D: depois do listener das vistas
     anchor="document.querySelectorAll('.views button').forEach(b=>b.addEventListener('click',()=>{view=b.dataset.v;"
     k=t.index(anchor)
