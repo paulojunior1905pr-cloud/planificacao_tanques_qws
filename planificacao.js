@@ -37,7 +37,7 @@
     tq = (tq.match(/TQ-\d+/) || [''])[0];
     var serv = ((document.querySelector('.eyebrow') || {}).textContent || '').split('·').pop().trim();
     var sit = ((document.querySelector('header .date') || {}).textContent || '').trim();
-    return { DATA: DATA, iso: iso, pts: pts, boc: boc, tq: tq, serv: serv, sit: sit, rings: Math.max.apply(null, DATA.map(function (d) { return d.a; })) };
+    return { DATA: DATA, fx: g('FAIXAS') || [], iso: iso, pts: pts, boc: boc, tq: tq, serv: serv, sit: sit, rings: Math.max.apply(null, DATA.map(function (d) { return d.a; })) };
   }
 
   // 3 etapas (Hidrojato, Fundo, Acabamento). Dado antigo com 4 valores: Fundo = maior entre 1ª e 2ª demão.
@@ -45,7 +45,7 @@
   // cor da chapa: última etapa concluída; etapa em andamento = riscos cruzados na cor dessa etapa
   function corChapa(d, iso) {
     if (iso) { if (d.p >= 1) return { c: C.rem }; if (d.p > 0) return { c: C.ni, s: C.rem }; return null; }
-    var p = etapas(d), E = [C.hidro, C.fundo, d.a === 1 ? C.acab1 : C.acab];
+    var p = d.pr ? etapas({ p: d.pr }) : etapas(d), E = [C.hidro, C.fundo, d.a === 1 ? C.acab1 : C.acab];
     var best = -1, part = -1;
     for (var i = 0; i < 3; i++) { if (p[i] >= 1) best = i; }
     for (i = best + 1; i < 3; i++) { if (p[i] > 0 && p[i] < 1) { part = i; break; } }
@@ -122,6 +122,22 @@
           var cx = Math.max(PADL, lx) + (Math.min(PADL + GW, lx + pw) - Math.max(PADL, lx)) / 2;
           if (Math.min(PADL + GW, lx + pw) - Math.max(PADL, lx) > 22) nums.push([cx, ry + RH / 2, d.n, c]);
         });
+      });
+      // faixas parciais na posição real (ex.: anel 6 acima do contraventamento): cor da etapa + contorno vermelho
+      D.fx.forEach(function (f) {
+        var ry = gy + (NR - f.a) * RH, bh = f.t * RH, pw = (f.ate - f.de) / SPAN * GW, E = [C.hidro, C.fundo, f.a === 1 ? C.acab1 : C.acab], best = null;
+        [-360, 0, 360].forEach(function (sh) {
+          var lx = PADL + (((hi - f.ate) % 360 + 360) % 360 + sh) / SPAN * GW;
+          if (lx > PADL + GW || lx + pw < PADL) return;
+          x.fillStyle = E[f.e]; x.fillRect(lx, ry, pw, bh);
+          x.strokeStyle = '#D32F2F'; x.lineWidth = 5; x.strokeRect(lx + 2.5, ry + 2.5, pw - 5, bh - 5);
+          var l = Math.max(PADL, lx), r = Math.min(PADL + GW, lx + pw);
+          if (!best || r - l > best[1] - best[0]) best = [l, r];
+        });
+        if (f.txt && best && best[1] - best[0] > 300) {
+          x.save(); x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = '700 ' + Math.round(Math.min(26, bh * 0.62)) + 'px ' + FONT_D;
+          x.fillStyle = f.e === 2 && f.a !== 1 ? '#B71C1C' : '#FFFFFF'; x.fillText(f.txt, (best[0] + best[1]) / 2, ry + bh / 2 + 1); x.restore();
+        }
       });
       if (CFG.numeros) nums.forEach(function (n) {
         var dark = n[3] && lum(n[3]) < 0.55;
