@@ -2,7 +2,7 @@
 - A 2ª demão (intermediária) deixa de existir: chapa com 2ª demão conta como Fundo concluído (Fundo = maior entre 1ª e 2ª).
 - Avanço por área (m²); global = média simples das 3 etapas.
 - Chapa com etapa em andamento: cor da última etapa concluída com riscos cruzados na cor da etapa em andamento.
-Uso: python ferramentas/tres_etapas.py [arquivos.html]   (sem argumentos: tanques/*.html; não altera o que já está com 3 etapas)"""
+Uso: python ferramentas/tres_etapas.py [arquivos.html]   (sem argumentos: tanques/*.html; pode rodar várias vezes; em página já com 3 etapas só converte DATA novo que vier com 4 valores)"""
 import pathlib, re, sys, json
 
 def conv_p(m):
@@ -26,10 +26,12 @@ PAINT = (
  "m.material.emissive.copy(m.baseE);m.material.needsUpdate=true;});}")
 
 def converte(t):
-    if 'const STAGES=[["Hidrojato","--hidro"],["Fundo","--fundo"],["Acabamento","--acab"]];' in t: return None
-    if '["Intermediária 2ª demão","--inter"]' not in t: return None
+    if 'const DATA=[' not in t: return None
     i = t.index('const DATA=['); j = t.index('];', i)
-    t = t[:i] + re.sub(r'"p":\s*(\[[^\]]*\])', conv_p, t[i:j]) + t[j:]
+    t0 = t; t = t[:i] + re.sub(r'"p":\s*(\[[^\]]*\])', conv_p, t[i:j]) + t[j:]
+    if 'const STAGES=[["Hidrojato","--hidro"],["Fundo","--fundo"],["Acabamento","--acab"]];' in t:  # já com 3 etapas: só ajusta dados novos de 4 valores
+        return t if t != t0 else None
+    if '["Intermediária 2ª demão","--inter"]' not in t: return None
     R = [
      ('const STAGES=[["Hidrojato","--hidro"],["Fundo 1ª demão","--fundo"],["Intermediária 2ª demão","--inter"],["Acabamento","--acab"]];',
       'const STAGES=[["Hidrojato","--hidro"],["Fundo","--fundo"],["Acabamento","--acab"]];'),
