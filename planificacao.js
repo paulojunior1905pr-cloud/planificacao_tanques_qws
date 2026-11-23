@@ -63,10 +63,11 @@
   }
 
   function desenhar(D) {
+    var ESTILO = (window.PLANIF_LEG || CFG.legenda || 'A');
     // imagem única: faixa contínua de 360° (360° à esquerda, 0° = Norte à direita), sem número de chapa
     var SPAN = 360, SECT = [[360, 'Vista externa · 360° à esquerda → 0° (Norte) à direita']];
     var W = 3840, PADL = 150, PADR = 60, GW = W - PADL - PADR, RH = D.rings > 3 ? 80 : 120, NR = D.rings;
-    var HEAD = 150, SECH = (SECT.length > 1 ? 46 : 10) + 54 + NR * RH + 90, FOOT = 190;
+    var HEAD = 110, SECH = (SECT.length > 1 ? 46 : 10) + 54 + NR * RH + 90, FOOT = D.iso ? 130 : ({ A: 185, B: 230, C: 240 }[ESTILO] || 140);
     var Hh = HEAD + SECT.length * SECH + FOOT;
     var cv = document.createElement('canvas'); cv.width = W; cv.height = Hh;
     var x = cv.getContext('2d');
@@ -85,9 +86,6 @@
     x.font = '500 24px ' + FONT_B; x.fillStyle = '#C9CED4'; x.textAlign = 'right';
     x.fillText('Vista externa · 360° à esquerda → 0° (Norte) à direita', W - 40, 50);
     x.textAlign = 'left';
-    x.font = 'italic 400 26px ' + FONT_B; x.fillStyle = C.muted;
-    x.fillText(D.iso ? 'Verde = isolamento removido · tom claro = remoção em andamento · hachurado = isolamento ainda instalado. BV-1 sob a escada; numeração no sentido anti-horário visto de cima.'
-      : 'Cor = última etapa concluída na chapa (Hidrojato, Fundo, Acabamento) · riscos cruzados = etapa seguinte em andamento · hachurado com divisões = chapa não iniciada. BV-1 sob a escada; numeração no sentido anti-horário visto de cima.', 40, 126);
 
     var esc = CFG.escada;
     SECT.forEach(function (S, si) {
@@ -158,30 +156,83 @@
     var fy = HEAD + SECT.length * SECH + 20;
     x.fillStyle = '#C0C5CA'; x.fillRect(40, fy - 10, W - 80, 1.5);
     var tot = D.DATA.reduce(function (s, d) { return s + d.ar; }, 0);
-    var av = D.iso ? [['Isolamento removido', C.rem, D.DATA.reduce(function (s, d) { return s + d.ar * d.p; }, 0) / tot]]
-      : [['Hidrojato', C.hidro], ['Fundo', C.fundo], ['Acabamento', C.acab]].map(function (e, i) {
-        return [e[0], e[1], D.DATA.reduce(function (s, d) { return s + d.ar * etapas(d)[i]; }, 0) / tot]; });
-    if (!D.iso) av.push(['Global (média das 3 etapas)', null, (av[0][2] + av[1][2] + av[2][2]) / 3]);
     x.textBaseline = 'middle'; x.textAlign = 'left';
-    x.fillStyle = C.ink; x.font = '700 40px ' + FONT_D; x.fillText('Avanço:', 40, fy + 30);
-    var cx = 200;
-    av.forEach(function (e) {
-      if (e[1]) { x.fillStyle = e[1]; x.fillRect(cx, fy + 12, 36, 36); x.strokeStyle = '#333'; x.lineWidth = 1; x.strokeRect(cx + 0.5, fy + 12.5, 35, 35); } else { cx += 10; x.fillStyle = '#C0C5CA'; x.fillRect(cx - 30, fy + 8, 2, 44); cx -= 48; }
-      x.fillStyle = C.ink; x.font = '600 38px ' + FONT_D; var t = e[0] + ' ' + fmt(e[2] * 100, 1) + '%'; x.fillText(t, cx + 48, fy + 31);
-      cx += 48 + x.measureText(t).width + 50;
-    });
-    var leg = D.iso ? [['Isolamento instalado', null], ['Em andamento', riscos(x, C.ni, C.rem)], ['Removido', C.rem]]
-      : [['Não iniciada', null], ['Hidrojato', C.hidro], ['Fundo', C.fundo], ['Acabamento (anéis 2 em diante)', C.acab], ['Acabamento (anel 1)', C.acab1], ['Em andamento (riscos na cor da etapa)', riscos(x, C.hidro, C.fundo)]];
-    cx = 40; var ly = fy + 100;
-    x.font = '500 30px ' + FONT_B;
-    leg.forEach(function (e) {
-      var w = 40 + 12 + x.measureText(e[0]).width + 44;
-      if (cx + w > W - 40) { cx = 40; ly += 40; }
-      x.fillStyle = e[1] || hatch; x.fillRect(cx, ly - 17, 40, 34);
-      x.strokeStyle = '#555'; x.lineWidth = 1; x.strokeRect(cx + 0.5, ly - 16.5, 39, 33);
-      x.fillStyle = C.ink; x.fillText(e[0], cx + 52, ly + 1); cx += w;
-    });
-    if (D.sit) { x.font = '400 26px ' + FONT_M; x.fillStyle = C.muted; x.textAlign = 'right'; x.fillText(D.sit, W - 40, fy + 31); }
+    var sw = function (fill, X, Y, w, h) { x.fillStyle = fill; x.fillRect(X, Y, w, h); x.strokeStyle = '#555'; x.lineWidth = 1.5; x.strokeRect(X + 0.75, Y + 0.75, w - 1.5, h - 1.5); };
+    var acabSw = function (X, Y, w, h) { // acabamento: metade preta (anel 1) e metade branca (demais anéis)
+      x.fillStyle = C.acab; x.fillRect(X, Y, w, h); x.fillStyle = C.acab1; x.beginPath(); x.moveTo(X, Y + h); x.lineTo(X + w, Y + h); x.lineTo(X + w, Y); x.closePath(); x.fill();
+      x.strokeStyle = '#555'; x.lineWidth = 1.5; x.strokeRect(X + 0.75, Y + 0.75, w - 1.5, h - 1.5); };
+    var txt = function (s, X, Y, font, cor) { x.font = font; x.fillStyle = cor || C.ink; x.fillText(s, X, Y); return x.measureText(s).width; };
+    var pc = function (v) { return fmt(v * 100, 1) + '%'; };
+    if (D.iso) {
+      var vr = D.DATA.reduce(function (s, d) { return s + d.ar * d.p; }, 0) / tot, cx = 40, yy = fy + 45;
+      [['Isolamento instalado', hatch], ['Remoção em andamento', riscos(x, C.ni, C.rem)], ['Removido', C.rem]].forEach(function (e) {
+        sw(e[1], cx, yy - 22, 56, 44); cx += 72 + txt(e[0], cx + 72, yy, '600 34px ' + FONT_B) + 70; });
+      x.textAlign = 'right'; txt('Removido: ' + pc(vr), W - 40, yy, '700 52px ' + FONT_D); x.textAlign = 'left';
+      if (D.sit) { x.textAlign = 'right'; txt(D.sit, W - 40, yy + 52, '400 24px ' + FONT_M, C.muted); x.textAlign = 'left'; }
+      return cv;
+    }
+    var et = [['Hidrojato', C.hidro], ['Fundo', C.fundo], ['Acabamento', C.acab]].map(function (e, i) {
+      return { n: e[0], c: e[1], v: D.DATA.reduce(function (s, d) { return s + d.ar * etapas(d)[i]; }, 0) / tot }; });
+    var glob = (et[0].v + et[1].v + et[2].v) / 3;
+    var andam = riscos(x, C.hidro, C.fundo);
+    var globalDireita = function (yy) {
+      x.textAlign = 'right'; txt(pc(glob), W - 40, yy, '700 76px ' + FONT_D);
+      var w = x.measureText(pc(glob)).width; txt('Avanço global', W - 60 - w, yy - 14, '600 30px ' + FONT_B, C.muted);
+      txt('média das 3 etapas', W - 60 - w, yy + 20, '400 24px ' + FONT_B, C.muted); x.textAlign = 'left'; };
+    if (ESTILO === 'A') { // linha única: cada cor aparece uma vez, com o avanço ao lado
+      var cx = 40, yy = fy + 55;
+      var item = function (fill, nome, val, acab) {
+        if (acab) acabSw(cx, yy - 26, 60, 52); else sw(fill, cx, yy - 26, 60, 52);
+        var w = txt(nome, cx + 76, yy, '600 36px ' + FONT_B);
+        if (val !== null) w += 14 + txt(pc(val), cx + 76 + w + 14, yy, '700 40px ' + FONT_D);
+        cx += 76 + w + 70; };
+      item(hatch, 'Não iniciada', null);
+      item(et[0].c, 'Hidrojato', et[0].v); item(et[1].c, 'Fundo', et[1].v); item(null, 'Acabamento', et[2].v, true);
+      item(andam, 'Em andamento', null);
+      txt('Acabamento: preto no anel 1, branco nos demais · em andamento = riscos na cor da etapa', 40, yy + 58, '400 24px ' + FONT_B, C.muted);
+      globalDireita(yy);
+    } else if (ESTILO === 'B') { // fluxo: a ordem das etapas, da esquerda para a direita
+      var bx = 40, by = fy + 20, bw = 400, bh = 86, gap = 70;
+      var passos = [{ n: 'Não iniciada', f: hatch, v: null }, { n: 'Hidrojato', f: C.hidro, v: et[0].v, tc: '#FFFFFF' }, { n: 'Fundo', f: C.fundo, v: et[1].v, tc: '#FFFFFF' }, { n: 'Acabamento', f: null, v: et[2].v }];
+      passos.forEach(function (s, k) {
+        var X = bx + k * (bw + gap);
+        if (s.f) sw(s.f, X, by, bw, bh); else acabSw(X, by, bw, bh);
+        x.textAlign = 'center';
+        if (s.f === hatch) { x.fillStyle = 'rgba(255,255,255,0.85)'; x.fillRect(X + bw / 2 - 120, by + bh / 2 - 26, 240, 52); }
+        if (!s.f) { x.fillStyle = 'rgba(255,255,255,0.9)'; x.fillRect(X + bw / 2 - 130, by + bh / 2 - 26, 260, 52); }
+        txt(s.n, X + bw / 2, by + bh / 2 + 2, '700 40px ' + FONT_D, s.tc || C.ink);
+        if (s.v !== null) {
+          txt(pc(s.v), X + bw / 2, by + bh + 48, '700 44px ' + FONT_D);
+        } else txt('—', X + bw / 2, by + bh + 48, '600 40px ' + FONT_D, C.muted);
+        x.textAlign = 'left';
+        if (k < passos.length - 1) { var ax = X + bw + 12, ay = by + bh / 2; x.strokeStyle = C.ink; x.lineWidth = 4; x.beginPath(); x.moveTo(ax, ay); x.lineTo(ax + gap - 26, ay); x.stroke();
+          x.fillStyle = C.ink; x.beginPath(); x.moveTo(ax + gap - 24, ay - 12); x.lineTo(ax + gap - 6, ay); x.lineTo(ax + gap - 24, ay + 12); x.fill(); }
+      });
+      var lx = bx + 4 * (bw + gap) + 30;
+      sw(andam, lx, by + 6, 70, 50); txt('Em andamento: riscos na cor da etapa', lx + 86, by + 31, '600 32px ' + FONT_B);
+      acabSw(lx, by + 80, 70, 50); txt('Acabamento: preto no anel 1, branco nos demais', lx + 86, by + 105, '600 32px ' + FONT_B);
+      globalDireita(by + 60);
+    } else { // C: cartões com barra de avanço por etapa
+      var cx = 40, cy = fy + 10, cw = 640, ch = 150;
+      et.forEach(function (e, k) {
+        var X = cx + k * (cw + 30);
+        x.fillStyle = '#F4F5F3'; x.fillRect(X, cy, cw, ch); x.strokeStyle = '#D3D8D4'; x.lineWidth = 2; x.strokeRect(X + 1, cy + 1, cw - 2, ch - 2);
+        if (k === 2) acabSw(X + 24, cy + 22, 50, 50); else sw(e.c, X + 24, cy + 22, 50, 50);
+        txt(e.n, X + 92, cy + 48, '700 40px ' + FONT_D);
+        x.textAlign = 'right'; txt(pc(e.v), X + cw - 24, cy + 48, '700 52px ' + FONT_D); x.textAlign = 'left';
+        x.fillStyle = '#E4E6E8'; x.fillRect(X + 24, cy + 96, cw - 48, 26);
+        x.fillStyle = k === 2 ? C.ink : e.c; x.fillRect(X + 24, cy + 96, (cw - 48) * Math.min(1, e.v), 26);
+        x.strokeStyle = '#999'; x.lineWidth = 1; x.strokeRect(X + 24.5, cy + 96.5, cw - 49, 25);
+      });
+      var X = cx + 3 * (cw + 30);
+      x.fillStyle = C.ink; x.fillRect(X, cy, 520, ch);
+      txt('Avanço global', X + 28, cy + 44, '600 32px ' + FONT_B, '#C9CED4'); txt('média das 3 etapas', X + 28, cy + 82, '400 24px ' + FONT_B, '#9AA5B0');
+      x.textAlign = 'right'; txt(pc(glob), X + 500, cy + 100, '700 80px ' + FONT_D, '#FFFFFF'); x.textAlign = 'left';
+      var lx = X + 560, ly = cy + 26;
+      [[hatch, 'Não iniciada'], [andam, 'Em andamento (riscos na cor da etapa)'], [null, 'Acabamento: preto no anel 1, branco nos demais']].forEach(function (e, k) {
+        var Y = ly + k * 48; if (e[0]) sw(e[0], lx, Y - 18, 54, 38); else acabSw(lx, Y - 18, 54, 38); txt(e[1], lx + 70, Y + 1, '500 28px ' + FONT_B); });
+    }
+    if (D.sit) { x.textAlign = 'right'; txt(D.sit, W - 40, Hh - 26, '400 24px ' + FONT_M, C.muted); x.textAlign = 'left'; }
     return cv;
   }
 
