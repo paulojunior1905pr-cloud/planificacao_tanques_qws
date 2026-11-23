@@ -123,14 +123,14 @@
           if (Math.min(PADL + GW, lx + pw) - Math.max(PADL, lx) > 22) nums.push([cx, ry + RH / 2, d.n, c]);
         });
       });
-      // faixas parciais na posição real (ex.: anel 6 acima do contraventamento): cor da etapa + contorno vermelho
+      // faixas parciais na posição real (ex.: anel 6 acima do contraventamento): cor da etapa + borda cinza fina
       D.fx.forEach(function (f) {
         var ry = gy + (NR - f.a) * RH, bh = f.t * RH, pw = (f.ate - f.de) / SPAN * GW, E = [C.hidro, C.fundo, f.a === 1 ? C.acab1 : C.acab], best = null;
         [-360, 0, 360].forEach(function (sh) {
           var lx = PADL + (((hi - f.ate) % 360 + 360) % 360 + sh) / SPAN * GW;
           if (lx > PADL + GW || lx + pw < PADL) return;
           x.fillStyle = E[f.e]; x.fillRect(lx, ry, pw, bh);
-          x.strokeStyle = '#D32F2F'; x.lineWidth = 5; x.strokeRect(lx + 2.5, ry + 2.5, pw - 5, bh - 5);
+          x.strokeStyle = C.niEdge; x.lineWidth = 1.6; x.strokeRect(lx + 0.8, ry + 0.8, pw - 1.6, bh - 1.6);
           var l = Math.max(PADL, lx), r = Math.min(PADL + GW, lx + pw);
           if (!best || r - l > best[1] - best[0]) best = [l, r];
         });
