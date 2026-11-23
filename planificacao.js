@@ -40,16 +40,26 @@
     return { DATA: DATA, iso: iso, pts: pts, boc: boc, tq: tq, serv: serv, sit: sit, rings: Math.max.apply(null, DATA.map(function (d) { return d.a; })) };
   }
 
-  // cor da chapa no padrão da planilha: etapa mais avançada concluída; tom intermediário = próxima em andamento
+  // 3 etapas (Hidrojato, Fundo, Acabamento). Dado antigo com 4 valores: Fundo = maior entre 1ª e 2ª demão.
+  function etapas(d) { var p = d.p; return p.length === 4 ? [p[0], Math.max(p[1], p[2]), p[3]] : p; }
+  // cor da chapa: última etapa concluída; etapa em andamento = riscos cruzados na cor dessa etapa
   function corChapa(d, iso) {
-    if (iso) { if (d.p >= 1) return C.rem; if (d.p > 0) return mix(C.ni, C.rem, 0.45); return null; }
-    var E = [C.hidro, C.fundo, C.inter, d.a === 1 ? C.acab1 : C.acab];
+    if (iso) { if (d.p >= 1) return { c: C.rem }; if (d.p > 0) return { c: C.ni, s: C.rem }; return null; }
+    var p = etapas(d), E = [C.hidro, C.fundo, d.a === 1 ? C.acab1 : C.acab];
     var best = -1, part = -1;
-    for (var i = 0; i < 4; i++) { if (d.p[i] >= 1) best = i; }
-    for (i = 0; i < 4; i++) { if (d.p[i] > 0 && d.p[i] < 1 && i > best) { part = i; break; } }
+    for (var i = 0; i < 3; i++) { if (p[i] >= 1) best = i; }
+    for (i = best + 1; i < 3; i++) { if (p[i] > 0 && p[i] < 1) { part = i; break; } }
     if (best < 0 && part < 0) return null;
-    if (part >= 0) return mix(best >= 0 ? E[best] : C.ni, E[part], 0.5);
-    return E[best];
+    var base = best >= 0 ? E[best] : C.ni;
+    if (part < 0) return { c: base };
+    var s = E[part]; if (s === C.acab && base !== C.acab1) s = '#F4F4F1'; if (s === base) s = C.niEdge;
+    return { c: base, s: s };
+  }
+  function riscos(x, base, cor) {
+    var pc = document.createElement('canvas'); pc.width = pc.height = 22;
+    var q = pc.getContext('2d'); q.fillStyle = base; q.fillRect(0, 0, 22, 22); q.strokeStyle = cor; q.lineWidth = 4;
+    [-22, 0, 22].forEach(function (k) { q.beginPath(); q.moveTo(k, 22); q.lineTo(k + 22, 0); q.stroke(); q.beginPath(); q.moveTo(k, 0); q.lineTo(k + 22, 22); q.stroke(); });
+    return x.createPattern(pc, 'repeat');
   }
 
   function desenhar(D) {
@@ -77,7 +87,7 @@
     x.textAlign = 'left';
     x.font = 'italic 400 26px ' + FONT_B; x.fillStyle = C.muted;
     x.fillText(D.iso ? 'Verde = isolamento removido · tom claro = remoção em andamento · hachurado = isolamento ainda instalado. BV-1 sob a escada; numeração no sentido anti-horário visto de cima.'
-      : 'Cor = última etapa concluída na chapa · tom intermediário = etapa seguinte em andamento · hachurado com divisões = chapa não iniciada. BV-1 sob a escada; numeração no sentido anti-horário visto de cima.', 40, 126);
+      : 'Cor = última etapa concluída na chapa (Hidrojato, Fundo, Acabamento) · riscos cruzados = etapa seguinte em andamento · hachurado com divisões = chapa não iniciada. BV-1 sob a escada; numeração no sentido anti-horário visto de cima.', 40, 126);
 
     var esc = CFG.escada;
     SECT.forEach(function (S, si) {
@@ -109,7 +119,7 @@
         [-360, 0, 360].forEach(function (sh) {
           var lx = PADL + (((hi - d.e) % 360 + 360) % 360 + sh) / SPAN * GW, pw = w / SPAN * GW;
           if (lx > PADL + GW || lx + pw < PADL) return;
-          if (c) { x.fillStyle = c; x.fillRect(lx - 0.6, ry, pw + 1.2, RH); }
+          if (c) { x.fillStyle = c.s ? riscos(x, c.c, c.s) : c.c; x.fillRect(lx - 0.6, ry, pw + 1.2, RH); }
           else { x.fillStyle = hatch; x.fillRect(lx, ry, pw, RH); x.strokeStyle = C.niEdge; x.lineWidth = 1.6; x.strokeRect(lx + 0.8, ry + 0.8, pw - 1.6, RH - 1.6); }
           var cx = Math.max(PADL, lx) + (Math.min(PADL + GW, lx + pw) - Math.max(PADL, lx)) / 2;
           if (Math.min(PADL + GW, lx + pw) - Math.max(PADL, lx) > 22) nums.push([cx, ry + RH / 2, d.n, c]);
@@ -149,18 +159,19 @@
     x.fillStyle = '#C0C5CA'; x.fillRect(40, fy - 10, W - 80, 1.5);
     var tot = D.DATA.reduce(function (s, d) { return s + d.ar; }, 0);
     var av = D.iso ? [['Isolamento removido', C.rem, D.DATA.reduce(function (s, d) { return s + d.ar * d.p; }, 0) / tot]]
-      : [['Hidrojato', C.hidro], ['Fundo 1ª demão', C.fundo], ['2ª demão', C.inter], ['Acabamento', C.acab]].map(function (e, i) {
-        return [e[0], e[1], D.DATA.reduce(function (s, d) { return s + d.ar * d.p[i]; }, 0) / tot]; });
+      : [['Hidrojato', C.hidro], ['Fundo', C.fundo], ['Acabamento', C.acab]].map(function (e, i) {
+        return [e[0], e[1], D.DATA.reduce(function (s, d) { return s + d.ar * etapas(d)[i]; }, 0) / tot]; });
+    if (!D.iso) av.push(['Global (média das 3 etapas)', null, (av[0][2] + av[1][2] + av[2][2]) / 3]);
     x.textBaseline = 'middle'; x.textAlign = 'left';
     x.fillStyle = C.ink; x.font = '700 40px ' + FONT_D; x.fillText('Avanço:', 40, fy + 30);
     var cx = 200;
     av.forEach(function (e) {
-      x.fillStyle = e[1]; x.fillRect(cx, fy + 12, 36, 36); x.strokeStyle = '#333'; x.lineWidth = 1; x.strokeRect(cx + 0.5, fy + 12.5, 35, 35);
+      if (e[1]) { x.fillStyle = e[1]; x.fillRect(cx, fy + 12, 36, 36); x.strokeStyle = '#333'; x.lineWidth = 1; x.strokeRect(cx + 0.5, fy + 12.5, 35, 35); } else { cx += 10; x.fillStyle = '#C0C5CA'; x.fillRect(cx - 30, fy + 8, 2, 44); cx -= 48; }
       x.fillStyle = C.ink; x.font = '600 38px ' + FONT_D; var t = e[0] + ' ' + fmt(e[2] * 100, 1) + '%'; x.fillText(t, cx + 48, fy + 31);
       cx += 48 + x.measureText(t).width + 50;
     });
-    var leg = D.iso ? [['Isolamento instalado', null], ['Em andamento', mix(C.ni, C.rem, 0.45)], ['Removido', C.rem]]
-      : [['Não iniciada', null], ['Hidrojato', C.hidro], ['Fundo 1ª demão', C.fundo], ['2ª demão', C.inter], ['Acabamento (anéis 2 em diante)', C.acab], ['Acabamento (anel 1)', C.acab1], ['Tom intermediário = etapa seguinte em andamento', mix(C.fundo, C.inter, 0.5)]];
+    var leg = D.iso ? [['Isolamento instalado', null], ['Em andamento', riscos(x, C.ni, C.rem)], ['Removido', C.rem]]
+      : [['Não iniciada', null], ['Hidrojato', C.hidro], ['Fundo', C.fundo], ['Acabamento (anéis 2 em diante)', C.acab], ['Acabamento (anel 1)', C.acab1], ['Em andamento (riscos na cor da etapa)', riscos(x, C.hidro, C.fundo)]];
     cx = 40; var ly = fy + 100;
     x.font = '500 30px ' + FONT_B;
     leg.forEach(function (e) {
