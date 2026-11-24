@@ -29,7 +29,7 @@
       rp0: g('RP0') || 36.937, rp1: g('RP1') || 49.05, tq: tq ? tq[0] : '', sit: sit };
   }
 
-  function corChapa(p) { return p >= 1 ? C.limpo : p > 0 ? C.parc : C.sujo; }
+  function corChapa(p) { return p >= 1 ? C.limpo : C.sujo; } // só 2 estados (Paulo, 24/11): chapa parcial = parte limpa em azul
 
   // planta: centro (cx, cy), escala s px/m
   function planta(x, D, cx, cy, s, o) {
@@ -42,7 +42,12 @@
     x.lineJoin = 'round';
     D.pl.forEach(function (d) {
       x.beginPath(); d.poly.forEach(function (q, i) { if (i) x.lineTo(X(q[0]), Y(q[1])); else x.moveTo(X(q[0]), Y(q[1])); }); x.closePath();
-      x.fillStyle = corChapa(d.p); x.fill(); x.strokeStyle = d.p > 0 ? 'rgba(255,255,255,0.75)' : C.sujoEdge; x.lineWidth = 1.2; x.stroke();
+      x.fillStyle = corChapa(d.p); x.fill();
+      if (d.p > 0 && d.p < 1) { // parte limpa proporcional à área, a partir do lado leste da chapa
+        var x0 = Infinity, x1 = -Infinity; d.poly.forEach(function (q) { x0 = Math.min(x0, q[0]); x1 = Math.max(x1, q[0]); });
+        x.save(); x.clip(); x.fillStyle = C.limpo; x.fillRect(X(x1 - (x1 - x0) * d.p), 0, (x1 - x0) * d.p * s + 2, 1e5); x.restore();
+        x.beginPath(); d.poly.forEach(function (q, i) { if (i) x.lineTo(X(q[0]), Y(q[1])); else x.moveTo(X(q[0]), Y(q[1])); }); x.closePath(); }
+      x.strokeStyle = d.p > 0 ? 'rgba(255,255,255,0.75)' : C.sujoEdge; x.lineWidth = 1.2; x.stroke();
     });
     // contornos
     x.strokeStyle = '#8A9096'; x.lineWidth = 2; x.beginPath(); x.arc(cx, cy, D.rp0 * s, 0, 2 * Math.PI); x.stroke();
@@ -100,8 +105,8 @@
     if (val) { x.textAlign = 'right'; txt(x, val, X + w - 24, Y + h / 2 + 14, '700 46px ' + FD); x.textAlign = 'left'; }
   }
   function itens(D) {
-    return [[C.limpo, 'Limpo', fmt(D.aL, 0) + ' m²', D.nL + ' chapas'], [C.parc, 'Limpeza parcial', fmt(D.aP, 0) + ' m²', D.nP + ' chapas'],
-      [C.sujo, 'Não limpo', fmt(D.tot - D.aL - D.aP, 0) + ' m²', (D.n - D.nL - D.nP) + ' chapas']];
+    return [[C.limpo, 'Limpo', fmt(D.ok, 0) + ' m²', pc(D.ok / D.tot) + ' do lençol'],
+      [C.sujo, 'Não limpo', fmt(D.tot - D.ok, 0) + ' m²', pc(1 - D.ok / D.tot) + ' do lençol']];
   }
   function chaveBV(x, X, Y) { bvSw(x, X + 16, Y, 14); txt(x, 'BV do teto', X + 44, Y + 9, '500 26px ' + FB);
     x.fillStyle = '#fff'; x.strokeStyle = C.bvC; x.lineWidth = 4; x.beginPath(); x.arc(X + 236, Y, 12, 0, 2 * Math.PI); x.fill(); x.stroke();
@@ -128,7 +133,7 @@
       cabecalho(x, D, W, 'Vista de cima · 0° = Norte · fiadas F1 (norte) a F' + D.fiadas.length + ' (sul)');
       var s = 19, cy = 1200; planta(x, D, 1180, cy, s, { bvTxt: true, fiadas: true });
       var PX = 2420, PW = 1360; cardGlobal(x, D, PX, 150, PW, 230);
-      var it = itens(D); it.forEach(function (e, k) { var w = (PW - 40) / 3, X = PX + k * (w + 20);
+      var it = itens(D); it.forEach(function (e, k) { var w = (PW - 20 * (it.length - 1)) / it.length, X = PX + k * (w + 20);
         x.fillStyle = C.card; x.fillRect(X, 410, w, 120); x.strokeStyle = C.cardEdge; x.lineWidth = 2; x.strokeRect(X + 1, 411, w - 2, 118);
         sw(x, e[0], X + 18, 432, 34, 34); txt(x, e[1], X + 64, 460, '700 30px ' + FD); txt(x, e[2] + ' · ' + e[3], X + 18, 510, '400 22px ' + FB, C.muted); });
       // barras por fiada, alinhadas à altura da fiada na planta
@@ -148,8 +153,8 @@
     x.fillStyle = '#fff'; x.fillRect(0, 0, W, H); cabecalho(x, D, W);
     planta(x, D, W / 2, top + (RS + 8) * s + 20, s, { bvTxt: false });
     var fy = top + plan + 40; x.fillStyle = '#C0C5CA'; x.fillRect(40, fy - 14, W - 80, 1.5);
-    var w3 = 560; itens(D).forEach(function (e, k) { cardItem(x, 40 + k * (w3 + 24), fy, w3, 150, e[0], e[1], e[2], e[3]); });
-    cardGlobal(x, D, 40 + 3 * (w3 + 24), fy, W - 80 - 3 * (w3 + 24), 150);
+    var gw = 768, w3 = (W - 80 - gw - 48) / 2; itens(D).forEach(function (e, k) { cardItem(x, 40 + k * (w3 + 24), fy, w3, 150, e[0], e[1], e[2], e[3]); });
+    cardGlobal(x, D, W - 40 - gw, fy, gw, 150);
     chaveBV(x, 40, fy + 210);
     if (D.sit) { x.textAlign = 'right'; txt(x, D.sit, W - 40, fy + 220, '400 24px ' + FM, C.muted); x.textAlign = 'left'; }
     return cv;
