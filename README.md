@@ -40,3 +40,8 @@ Ao adicionar um modelo novo, acrescente a faixa da escada em `ferramentas/botao_
 Sempre que `planificacao.js` mudar, rode `python ferramentas/versao_js.py`: ele põe `?v=<hash>` no `<script>` das páginas
 para o navegador não usar uma cópia antiga do desenho. Ao regravar uma página de tanque, mantenha o botão, o tema e os
 `<script>` do final (`planif-cfg` e `planificacao.js`).
+
+## Botão "⤓ Teto (PNG)"
+Nas páginas com teto flutuante (`const ROOF_P=`), o botão baixa a vista de cima do lençol com a limpeza
+(`TQ-xxxxx_teto_planificacao_DD-MM-AAAA.png`, modelo A escolhido pelo Paulo em 24/11/2026). O desenho fica em
+`planificacao_teto.js`. Para pôr o botão num tanque novo com teto: `python ferramentas/botao_teto.py` e depois `python ferramentas/versao_js.py`.

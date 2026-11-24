@@ -109,7 +109,7 @@
     sw(x, C.pont, X + 480, Y - 16, 46, 32); txt(x, 'Pontão (fora do acompanhamento)', X + 540, Y + 9, '500 26px ' + FB); }
 
   function desenhar(D, M) {
-    M = M || window.TETO_LEG || 'A';
+    M = M || window.TETO_LEG || 'A'; // A = escolhido pelo Paulo (24/11/2026)
     var cv = document.createElement('canvas'), x;
     if (M === 'B') { // 16:9: planta à esquerda, painel à direita
       var W = 3840, H = 2160; cv.width = W; cv.height = H; x = cv.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
