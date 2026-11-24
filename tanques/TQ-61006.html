@@ -87,7 +87,7 @@ aside{display:flex;flex-direction:column;gap:12px;min-width:0}
     <div class="roofbar" id="roofbar"><b>Teto flutuante</b>
 <button id="rTop" aria-pressed="false">Ver de cima</button>
 <button id="rShell" aria-pressed="true">Costado visível</button>
-<span class="lg"><i style="background:#2E86C1"></i>Limpo</span><span class="lg"><i style="background:#B3AC9C"></i>Não limpo</span>
+<span class="lg"><i style="background:#2E86C1"></i>Limpo</span><span class="lg"><i style="background:#B3AC9C"></i>Não limpo</span><span class="lg"><i style="background:#E67E22;border-radius:50%"></i>BV do teto</span>
 <span id="rKpi" style="margin-left:8px;font-weight:700"></span></div><div class="views" role="group" aria-label="Escolher o que colorir">
       <button data-v="geral" aria-pressed="true">Situação geral</button>
       <button data-v="0" aria-pressed="false"><span class="sw" style="background:var(--hidro)"></span>Hidrojato</button>
@@ -1346,10 +1346,10 @@ document.querySelectorAll('[data-cam]').forEach(b=>b.addEventListener('click',()
 // tooltip
 const ray=new THREE.Raycaster(),mouse=new THREE.Vector2(),tip=document.getElementById('tip');let hovered=null;
 function pick(ev){const r=canvas.getBoundingClientRect();mouse.x=((ev.clientX-r.left)/r.width)*2-1;mouse.y=-((ev.clientY-r.top)/r.height)*2+1;
-  ray.setFromCamera(mouse,camera);const hit=ray.intersectObjects(meshes.filter(m=>m.visible).concat(window.ROOFM||[]))[0];
+  ray.setFromCamera(mouse,camera);const hit=ray.intersectObjects(meshes.filter(m=>m.visible).concat(window.ROOFM||[],window.BVM||[]))[0];
   if(hovered&&hovered!==hit?.object){hovered.material.emissive.copy(hovered.baseE);hovered=null;}
   if(!hit){tip.hidden=true;return;}
-  hovered=hit.object;hovered.material.emissive.copy(hovered.baseE).add(new THREE.Color(0x333333));const d=hovered.userData;if(d.roof){tip.innerHTML=`<b>Lençol · Faixa F${d.f} · Chapa ${d.c}</b><div class="r"><span>Área</span><span>${fmt(d.ar,1)} m²</span></div><div class="r"><span>Limpeza</span><span>${Math.round((d.pv||0)*100)}%</span></div>`;tip.hidden=false;let x=ev.clientX-r.left,y=ev.clientY-r.top;if(x>r.width-200)x-=210;if(y>r.height-170)y-=180;tip.style.left=x+'px';tip.style.top=y+'px';return;}
+  hovered=hit.object;hovered.material.emissive.copy(hovered.baseE).add(new THREE.Color(0x333333));const d=hovered.userData;if(d.bv){tip.innerHTML=`<b>Boca de visita do teto (${d.t})</b><div class="r"><span>Posição</span><span>${fmt(d.ang)}° · R ${fmt(d.r)} m</span></div><div class="r"><span>Ø 914 mm</span><span>pescoço ${Math.round(d.h*1000)} mm</span></div>`;tip.hidden=false;let x=ev.clientX-r.left,y=ev.clientY-r.top;if(x>r.width-200)x-=210;if(y>r.height-170)y-=180;tip.style.left=x+'px';tip.style.top=y+'px';return;}if(d.roof){tip.innerHTML=`<b>Lençol · Faixa F${d.f} · Chapa ${d.c}</b><div class="r"><span>Área</span><span>${fmt(d.ar,1)} m²</span></div><div class="r"><span>Limpeza</span><span>${Math.round((d.pv||0)*100)}%</span></div>`;tip.hidden=false;let x=ev.clientX-r.left,y=ev.clientY-r.top;if(x>r.width-200)x-=210;if(y>r.height-170)y-=180;tip.style.left=x+'px';tip.style.top=y+'px';return;}
   tip.innerHTML=`<b>Anel ${d.a} · Chapa ${d.n}</b><div class="r"><span>${fmt(d.s)}° a ${fmt(d.e)}°</span><span>${fmt(d.ar,1)} m²</span></div>`+
     (d.o?`<div>${d.o}</div>`:'')+STAGES.map(([n],i)=>`<div class="r"><span>${n}</span><span>${Math.round(d.p[i]*100)}%</span></div>`).join('');
   tip.hidden=false;let x=ev.clientX-r.left,y=ev.clientY-r.top;if(x>r.width-200)x-=210;if(y>r.height-170)y-=180;tip.style.left=x+'px';tip.style.top=y+'px';}
@@ -1400,6 +1400,15 @@ function paintRoof(){let tot=0,ok=0;ROOFM.forEach(m=>{const d=m.userData;let p=d
   const c=p>=1?C_LIMPO:(p>0?C_SUJO.clone().lerp(C_LIMPO,0.45):C_SUJO);m.material.color.copy(c);m.material.needsUpdate=true;tot+=d.ar;ok+=d.ar*p;});
   const pc=ok/tot*100;document.getElementById('lk').textContent=fmt(pc)+'%';document.getElementById('lkBar').style.width=Math.min(100,pc)+'%';document.getElementById('lkSub').textContent=fmt(ok,0)+' de '+fmt(tot,0)+' m²'+(demo?' · simulação':'');document.getElementById('rKpi').textContent='Lençol limpo: '+fmt(ok/tot*100)+'% · '+fmt(ok,0)+' de '+fmt(tot,0)+' m²'+(demo?' (simulação)':'');}
 paintRoof();
+// BVs do teto (TZJ-005 rev E / TZJ-038 rev C): 6 baixas no lençol R 22,2 m; 2 altas junto ao flutuador R 35,8 m
+const BVM=[];window.BVM=BVM;
+{const BVT=[[0,22.2,'baixa'],[60,22.2,'baixa'],[120,22.2,'baixa'],[180,22.2,'baixa'],[240,22.2,'baixa'],[300,22.2,'baixa'],[48.5,35.8,'alta'],[253,35.8,'alta']];
+ const mBody=()=>new THREE.MeshLambertMaterial({color:0x5B6168}), mTop=()=>new THREE.MeshLambertMaterial({color:0xE67E22});
+ BVT.forEach(([ang,r,t])=>{const a=ang*Math.PI/180,x=r*Math.sin(a),z=-r*Math.cos(a);const h=t==='alta'?0.616:0.2, dc=t==='alta'?0.98:1.054;
+  const body=new THREE.Mesh(new THREE.CylinderGeometry(0.457,0.457,h,32),mBody());body.position.set(x,YR+h/2,z);
+  const top=new THREE.Mesh(new THREE.CylinderGeometry(dc/2,dc/2,0.03,32),mTop());top.position.set(x,YR+h+0.015,z);
+  const ref=new THREE.Mesh(new THREE.RingGeometry(0.457,0.86,32),new THREE.MeshLambertMaterial({color:0x8A9096,side:THREE.DoubleSide}));ref.rotation.x=-Math.PI/2;ref.position.set(x,YR+0.01,z);
+  [body,top].forEach(m=>{m.baseE=new THREE.Color(0);m.userData={bv:1,t,ang,r,h};BVM.push(m);});ROOF.add(body,top,ref);});}
 const rTop=document.getElementById('rTop'),rShell=document.getElementById('rShell');
 rTop.addEventListener('click',()=>{const on=rTop.getAttribute('aria-pressed')!=='true';rTop.setAttribute('aria-pressed',on);
   if(on){controls.autoRotate=false;camera.position.set(0,175,1);controls.target.set(0,YR,0);}else{controls.target.set(0,6,0);camAt(215,190);}controls.update();});
