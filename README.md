@@ -46,5 +46,5 @@ Nas páginas com teto flutuante (`const ROOF_P=`), o botão baixa a vista de cim
 (`TQ-xxxxx_teto_planificacao_DD-MM-AAAA.png`, modelo A escolhido pelo Paulo em 24/11/2026).
 Padrão aprovado (24/11/2026): vista de cima, legenda com só 2 itens, **Limpo** e **Não limpo** (sem "limpeza parcial");
 chapa limpa em parte mostra a parte limpa em azul e o resto em bege; cartões Limpo / Não limpo (m² e % do lençol) + Lençol limpo (%);
-BVs do teto (laranja), BVs do costado, ângulos a cada 30° e pontão em cinza (fora do acompanhamento). O desenho fica em
+só o lençol, sem o flutuador/pontão e sem o costado (25/11/2026); BVs do teto (laranja) e ângulos a cada 30° em volta do lençol. O desenho fica em
 `planificacao_teto.js`. Para pôr o botão num tanque novo com teto: `python ferramentas/botao_teto.py` e depois `python ferramentas/versao_js.py`.

@@ -35,8 +35,9 @@
   function planta(x, D, cx, cy, s, o) {
     o = o || {};
     var X = function (m) { return cx + m * s; }, Y = function (m) { return cy - m * s; };
-    // costado e pontão
-    x.fillStyle = C.pont; x.beginPath(); x.arc(cx, cy, D.rp1 * s, 0, 2 * Math.PI); x.fill();
+    var RR = o.soLencol ? D.rp0 + 1.2 : RS; // raio de referência dos ângulos / norte
+    // costado e pontão (fora no modelo só do lençol)
+    if (!o.soLencol) { x.fillStyle = C.pont; x.beginPath(); x.arc(cx, cy, D.rp1 * s, 0, 2 * Math.PI); x.fill(); }
     x.fillStyle = '#FFFFFF'; x.beginPath(); x.arc(cx, cy, D.rp0 * s, 0, 2 * Math.PI); x.fill();
     // chapas do lençol
     x.lineJoin = 'round';
@@ -51,20 +52,20 @@
     });
     // contornos
     x.strokeStyle = '#8A9096'; x.lineWidth = 2; x.beginPath(); x.arc(cx, cy, D.rp0 * s, 0, 2 * Math.PI); x.stroke();
-    x.strokeStyle = C.shell; x.lineWidth = 6; x.beginPath(); x.arc(cx, cy, RS * s, 0, 2 * Math.PI); x.stroke();
+    if (!o.soLencol) { x.strokeStyle = C.shell; x.lineWidth = 6; x.beginPath(); x.arc(cx, cy, RS * s, 0, 2 * Math.PI); x.stroke(); }
     if (o.pontaoTxt) { x.save(); x.fillStyle = C.muted; x.font = '600 ' + Math.round(s * 1.5) + 'px ' + FB; x.textAlign = 'center'; x.textBaseline = 'middle';
       var r = (D.rp0 + D.rp1) / 2 * s, a = 135 * Math.PI / 180; x.translate(cx + r * Math.sin(a), cy - r * Math.cos(a)); x.rotate(a - Math.PI);
       x.fillText('PONTÃO (fora do acompanhamento)', 0, 0); x.restore(); }
     // ângulos a cada 30° fora do costado
     x.fillStyle = C.muted; x.font = '600 ' + Math.round(s * 1.25) + 'px ' + FM; x.textAlign = 'center'; x.textBaseline = 'middle';
-    for (var a = 0; a < 360; a += 30) { var r1 = RS * s + 8, r2 = RS * s + 24, rr = RS * s + s * 3.2, t = a * Math.PI / 180;
+    for (var a = 0; a < 360; a += 30) { var r1 = RR * s + 8, r2 = RR * s + 24, rr = RR * s + s * 3.2, t = a * Math.PI / 180;
       x.strokeStyle = C.muted; x.lineWidth = 2; x.beginPath(); x.moveTo(cx + r1 * Math.sin(t), cy - r1 * Math.cos(t)); x.lineTo(cx + r2 * Math.sin(t), cy - r2 * Math.cos(t)); x.stroke();
       if (a !== 0) x.fillText(a + '°', cx + rr * Math.sin(t), cy - rr * Math.cos(t)); }
     // norte
-    var ny = cy - RS * s - s * 3.6; x.fillStyle = C.ink; x.font = '700 ' + Math.round(s * 2.2) + 'px ' + FD; x.textAlign = 'right'; x.fillText('N  0°', cx - s * 1.2, ny + s * 0.6); x.textAlign = 'center';
+    var ny = cy - RR * s - s * 3.6; x.fillStyle = C.ink; x.font = '700 ' + Math.round(s * 2.2) + 'px ' + FD; x.textAlign = 'right'; x.fillText('N  0°', cx - s * 1.2, ny + s * 0.6); x.textAlign = 'center';
     x.beginPath(); x.moveTo(cx, ny - s * 0.1); x.lineTo(cx - s * 0.8, ny + s * 1.3); x.lineTo(cx + s * 0.8, ny + s * 1.3); x.closePath(); x.fill();
     // BVs do costado (referência)
-    if (o.bvCostado !== false) D.pts.forEach(function (p) { var t = p[0] * Math.PI / 180, r = RS * s;
+    if (o.bvCostado !== false && !o.soLencol) D.pts.forEach(function (p) { var t = p[0] * Math.PI / 180, r = RS * s;
       x.fillStyle = '#FFFFFF'; x.strokeStyle = C.bvC; x.lineWidth = 4; x.beginPath(); x.arc(cx + r * Math.sin(t), cy - r * Math.cos(t), s * 0.75, 0, 2 * Math.PI); x.fill(); x.stroke();
       var r3 = RS * s + s * 5.6; x.fillStyle = C.bvC; x.font = '700 ' + Math.round(s * 1.35) + 'px ' + FD; x.fillText(p[1], cx + r3 * Math.sin(t), cy - r3 * Math.cos(t)); });
     // BVs do teto
@@ -108,7 +109,7 @@
     return [[C.limpo, 'Limpo', fmt(D.ok, 0) + ' m²', pc(D.ok / D.tot) + ' do lençol'],
       [C.sujo, 'Não limpo', fmt(D.tot - D.ok, 0) + ' m²', pc(1 - D.ok / D.tot) + ' do lençol']];
   }
-  function chaveBV(x, X, Y) { bvSw(x, X + 16, Y, 14); txt(x, 'BV do teto', X + 44, Y + 9, '500 26px ' + FB);
+  function chaveBV(x, X, Y, so) { bvSw(x, X + 16, Y, 14); txt(x, 'BV do teto', X + 44, Y + 9, '500 26px ' + FB); if (so) return;
     x.fillStyle = '#fff'; x.strokeStyle = C.bvC; x.lineWidth = 4; x.beginPath(); x.arc(X + 236, Y, 12, 0, 2 * Math.PI); x.fill(); x.stroke();
     txt(x, 'BV do costado', X + 262, Y + 9, '500 26px ' + FB);
     sw(x, C.pont, X + 480, Y - 16, 46, 32); txt(x, 'Pontão (fora do acompanhamento)', X + 540, Y + 9, '500 26px ' + FB); }
@@ -149,13 +150,14 @@
       return cv;
     }
     // A: vista de cima com cartões embaixo (mesma linguagem do PNG do costado)
-    var W = 2600, s = 22, top = 96, plan = 2 * (RS + 8) * s, H = top + plan + 330; cv.width = W; cv.height = H; x = cv.getContext('2d');
+    // só o lençol, sem o flutuador (pedido do Paulo, 25/11/2026)
+    var RA = D.rp0 + 6.5, W = 2600, s = 1180 / RA, top = 96, plan = 2 * RA * s, H = top + plan + 330; cv.width = W; cv.height = H; x = cv.getContext('2d');
     x.fillStyle = '#fff'; x.fillRect(0, 0, W, H); cabecalho(x, D, W);
-    planta(x, D, W / 2, top + (RS + 8) * s + 20, s, { bvTxt: false });
+    planta(x, D, W / 2, top + RA * s + 20, s, { bvTxt: false, soLencol: true });
     var fy = top + plan + 40; x.fillStyle = '#C0C5CA'; x.fillRect(40, fy - 14, W - 80, 1.5);
     var gw = 768, w3 = (W - 80 - gw - 48) / 2; itens(D).forEach(function (e, k) { cardItem(x, 40 + k * (w3 + 24), fy, w3, 150, e[0], e[1], e[2], e[3]); });
     cardGlobal(x, D, W - 40 - gw, fy, gw, 150);
-    chaveBV(x, 40, fy + 210);
+    chaveBV(x, 40, fy + 210, true);
     if (D.sit) { x.textAlign = 'right'; txt(x, D.sit, W - 40, fy + 220, '400 24px ' + FM, C.muted); x.textAlign = 'left'; }
     return cv;
   }
