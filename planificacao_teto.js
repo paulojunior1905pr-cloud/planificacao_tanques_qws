@@ -81,9 +81,9 @@
     x.textAlign = 'left'; x.textBaseline = 'alphabetic';
   }
 
-  function cabecalho(x, D, W, sub) {
+  function cabecalho(x, D, W, sub, tit) {
     x.fillStyle = C.ink; x.fillRect(0, 0, W, 96);
-    x.fillStyle = '#FFFFFF'; x.font = '700 50px ' + FD; x.textBaseline = 'middle'; x.fillText((D.tq ? D.tq + ' · ' : '') + 'Teto flutuante – limpeza do lençol', 40, 50);
+    x.fillStyle = '#FFFFFF'; x.font = '700 50px ' + FD; x.textBaseline = 'middle'; x.fillText((D.tq ? D.tq + ' · ' : '') + (tit || 'Teto flutuante – limpeza do lençol'), 40, 50);
     x.font = '500 24px ' + FB; x.fillStyle = '#C9CED4'; x.textAlign = 'right'; x.fillText(sub || 'Vista de cima · 0° = Norte', W - 40, 50); x.textAlign = 'left'; x.textBaseline = 'alphabetic';
   }
   function sw(x, f, X, Y, w, h) { x.fillStyle = f; x.fillRect(X, Y, w, h); x.strokeStyle = '#555'; x.lineWidth = 1.5; x.strokeRect(X + 0.75, Y + 0.75, w - 1.5, h - 1.5); }
@@ -162,6 +162,69 @@
     return cv;
   }
 
+  // ---------- flutuador (pontão): 72 porões x setor interno/externo, mesmo padrão da imagem do lençol
+  function dadosFlut() {
+    var S = g('FLUT_S') || [], L = g('FLUT_L') || {}, base = dados();
+    var se = S.map(function (q) { var k = 'P' + q[0] + '-' + (q[1] === 'i' ? 'interno' : 'externo');
+      return { p: q[0], s: q[1], a0: q[2], a1: q[3], r0: q[4], r1: q[5], ar: q[6], v: Math.min(1, L[k] || 0) }; });
+    var tot = 0, ok = 0; se.forEach(function (d) { tot += d.ar; ok += d.ar * d.v; });
+    return { se: se, tot: tot, ok: ok, n: se.length, nL: se.filter(function (d) { return d.v >= 1; }).length, pts: base.pts, tq: base.tq, sit: base.sit,
+      rp0: base.rp0, rp1: base.rp1 };
+  }
+  function setor(x, cx, cy, s, r0, r1, a0, a1) { var R = Math.PI / 180;
+    x.beginPath(); x.arc(cx, cy, r1 * s, (a0 - 90) * R, (a1 - 90) * R); x.arc(cx, cy, r0 * s, (a1 - 90) * R, (a0 - 90) * R, true); x.closePath(); }
+  function desenharFlut(F) {
+    var W = 2600, RA = F.rp1 + 7, s = 1180 / RA, top = 96, plan = 2 * RA * s, H = top + plan + 330, cx = W / 2, cy = top + RA * s + 20;
+    var cv = document.createElement('canvas'); cv.width = W; cv.height = H; var x = cv.getContext('2d');
+    x.fillStyle = '#fff'; x.fillRect(0, 0, W, H); cabecalho(x, F, W, 'Vista de cima · 0° = Norte · P1 = BV-1, sentido anti-horário', 'Teto flutuante – limpeza do flutuador');
+    // lençol só como referência
+    x.fillStyle = '#EEF0F2'; x.beginPath(); x.arc(cx, cy, F.rp0 * s, 0, 2 * Math.PI); x.fill();
+    x.fillStyle = '#9AA1A8'; x.font = '700 ' + Math.round(s * 3) + 'px ' + FD; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('LENÇOL', cx, cy - s * 1.2);
+    x.font = '400 ' + Math.round(s * 1.3) + 'px ' + FB; x.fillText('(acompanhado na imagem do lençol)', cx, cy + s * 2);
+    // setores
+    F.se.forEach(function (d) {
+      setor(x, cx, cy, s, d.r0, d.r1, d.a0, d.a1); x.fillStyle = C.sujo; x.fill();
+      if (d.v > 0) { setor(x, cx, cy, s, d.r0, d.r1, d.a0, d.a0 + (d.a1 - d.a0) * d.v); x.fillStyle = C.limpo; x.fill(); }
+      setor(x, cx, cy, s, d.r0, d.r1, d.a0, d.a1); x.strokeStyle = C.sujoEdge; x.lineWidth = 1.5; x.stroke();
+    });
+    x.strokeStyle = C.shell; x.lineWidth = 6; x.beginPath(); x.arc(cx, cy, F.rp1 * s, 0, 2 * Math.PI); x.stroke();
+    // número do porão (no setor interno) e BVs do flutuador
+    var R = Math.PI / 180;
+    for (var k = 0; k < 72; k++) { var p = k + 1, am = 107.5 - 5 * k, t = am * R, rl = (F.rp0 + 40.6) / 2;
+      x.save(); x.translate(cx + rl * s * Math.sin(t), cy - rl * s * Math.cos(t)); var aa = ((am % 360) + 360) % 360; x.rotate(aa > 90 && aa < 270 ? t + Math.PI : t);
+      x.fillStyle = C.ink; x.font = '700 ' + Math.round(s * 0.95) + 'px ' + FB; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('P' + p, 0, 0); x.restore();
+      var ab = (2.4 + 5 * k) * R; [43.0, 46.5].forEach(function (rb) {
+        x.fillStyle = '#16A085'; x.strokeStyle = C.ink; x.lineWidth = 2; x.beginPath(); x.arc(cx + rb * s * Math.sin(ab), cy - rb * s * Math.cos(ab), s * 0.42, 0, 2 * Math.PI); x.fill(); x.stroke(); }); }
+    // ângulos, norte e BVs do costado
+    x.fillStyle = C.muted; x.font = '600 ' + Math.round(s * 1.15) + 'px ' + FM; x.textAlign = 'center'; x.textBaseline = 'middle';
+    for (var a = 30; a < 360; a += 30) { var ta = a * R, rr = F.rp1 * s + s * 4.6; x.fillText(a + '°', cx + rr * Math.sin(ta), cy - rr * Math.cos(ta)); }
+    x.fillStyle = C.ink; x.font = '700 ' + Math.round(s * 2) + 'px ' + FD; x.textAlign = 'right'; x.fillText('N  0°', cx - s * 1.3, cy - F.rp1 * s - s * 4.4); x.textAlign = 'center';
+    x.beginPath(); x.moveTo(cx, cy - F.rp1 * s - s * 5.4); x.lineTo(cx - s * 0.7, cy - F.rp1 * s - s * 4.1); x.lineTo(cx + s * 0.7, cy - F.rp1 * s - s * 4.1); x.closePath(); x.fill();
+    F.pts.forEach(function (q) { var tq = q[0] * R, r = F.rp1 * s;
+      x.fillStyle = '#fff'; x.strokeStyle = C.bvC; x.lineWidth = 4; x.beginPath(); x.arc(cx + r * Math.sin(tq), cy - r * Math.cos(tq), s * 0.6, 0, 2 * Math.PI); x.fill(); x.stroke();
+      var r3 = F.rp1 * s + s * 2.3; x.fillStyle = C.bvC; x.font = '700 ' + Math.round(s * 1.2) + 'px ' + FD; x.fillText(q[1], cx + r3 * Math.sin(tq), cy - r3 * Math.cos(tq)); });
+    x.textAlign = 'left'; x.textBaseline = 'alphabetic';
+    // cartões (mesmo padrão do lençol)
+    var fy = top + plan + 40; x.fillStyle = '#C0C5CA'; x.fillRect(40, fy - 14, W - 80, 1.5);
+    var it = [[C.limpo, 'Limpo', fmt(F.ok, 0) + ' m²', pc(F.ok / F.tot) + ' do flutuador'], [C.sujo, 'Não limpo', fmt(F.tot - F.ok, 0) + ' m²', pc(1 - F.ok / F.tot) + ' do flutuador']];
+    var gw = 768, w3 = (W - 80 - gw - 48) / 2; it.forEach(function (e, k) { cardItem(x, 40 + k * (w3 + 24), fy, w3, 150, e[0], e[1], e[2], e[3]); });
+    var X = W - 40 - gw; x.fillStyle = C.ink; x.fillRect(X, fy, gw, 150);
+    txt(x, 'Flutuador limpo', X + 28, fy + 48, '600 32px ' + FB, '#C9CED4'); txt(x, fmt(F.ok, 0) + ' de ' + fmt(F.tot, 0) + ' m²', X + 28, fy + 86, '400 24px ' + FB, '#9AA5B0');
+    x.textAlign = 'right'; txt(x, pc(F.ok / F.tot), X + gw - 24, fy + 120, '700 84px ' + FD, '#FFFFFF'); x.textAlign = 'left';
+    x.fillStyle = 'rgba(255,255,255,0.18)'; x.fillRect(X + 28, fy + 132, gw - 56, 8); x.fillStyle = C.limpo; x.fillRect(X + 28, fy + 132, (gw - 56) * Math.min(1, F.ok / F.tot), 8);
+    x.fillStyle = '#16A085'; x.strokeStyle = C.ink; x.lineWidth = 3; x.beginPath(); x.arc(56, fy + 210, 14, 0, 2 * Math.PI); x.fill(); x.stroke();
+    txt(x, 'BV do flutuador (2 por porão)', 84, fy + 219, '500 26px ' + FB);
+    x.fillStyle = '#fff'; x.strokeStyle = C.bvC; x.lineWidth = 4; x.beginPath(); x.arc(510, fy + 210, 12, 0, 2 * Math.PI); x.fill(); x.stroke(); txt(x, 'BV do costado', 536, fy + 219, '500 26px ' + FB);
+    if (F.sit) { x.textAlign = 'right'; txt(x, F.sit, W - 40, fy + 220, '400 24px ' + FM, C.muted); x.textAlign = 'left'; }
+    return cv;
+  }
+  function baixarFlut() {
+    var F = dadosFlut(); if (!F.se.length) return; var cv = desenharFlut(F), d = new Date(), p = function (n) { return String(n).padStart(2, '0'); };
+    var nome = (F.tq || 'tanque') + '_flutuador_planificacao_' + p(d.getDate()) + '-' + p(d.getMonth() + 1) + '-' + d.getFullYear() + '.png';
+    cv.toBlob(function (b) { var a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = nome; document.body.appendChild(a); a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000); }, 'image/png');
+  }
+
   function nomeArquivo(tq) { var d = new Date(), p = function (n) { return String(n).padStart(2, '0'); };
     return (tq || 'tanque') + '_teto_planificacao_' + p(d.getDate()) + '-' + p(d.getMonth() + 1) + '-' + d.getFullYear() + '.png'; }
   function baixar() {
@@ -172,6 +235,7 @@
       setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
     }, 'image/png');
   }
-  window.PLANIF_TETO = { dados: dados, desenhar: desenhar, baixar: baixar };
+  window.PLANIF_TETO = { dados: dados, desenhar: desenhar, baixar: baixar, dadosFlut: dadosFlut, desenharFlut: desenharFlut, baixarFlut: baixarFlut };
+  var bf = document.getElementById('flut-png'); if (bf) bf.addEventListener('click', function () { (document.fonts ? document.fonts.ready : Promise.resolve()).then(baixarFlut); });
   var b = document.getElementById('teto-png'); if (b) b.addEventListener('click', function () { (document.fonts ? document.fonts.ready : Promise.resolve()).then(baixar); });
 })();
