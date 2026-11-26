@@ -13,6 +13,6 @@ for f in sorted((raiz / "tanques").glob("*.html")):
              'font:600 13px system-ui,sans-serif;color:inherit;text-decoration:none;opacity:.8">&#9998; Levantamento manual</a>')
     t = f.read_text(encoding="utf-8")
     t = re.sub(r'\s*<a id="levantamento-manual".*?</a>', '', t, flags=re.S)
-    t, n = re.subn(r'(<button id="planif-png".*?</button>)', lambda m: m.group(1) + '\n    ' + botao, t, count=1, flags=re.S)
+    t, n = re.subn(r'(<button id="tema-toggle".*?</button>)', lambda m: m.group(1) + '\n    ' + botao, t, count=1, flags=re.S)
     if not n: print("sem lugar para o botão:", f.name); continue
     f.write_text(t, encoding="utf-8"); print("ok:", f.name)
