@@ -126,7 +126,7 @@ textarea{width:100%;min-height:70px;resize:vertical;box-sizing:border-box}
 
 <div class="sheet">
   <div class="scroll" id="sc"><canvas id="cv"></canvas><div class="tip" id="tip" hidden></div></div>
-  <div class="hint" id="hint">Clique numa chapa para marcar a chapa inteira. Arraste para marcar só uma parte (retângulo, inclusive pegando vários anéis). Teclas 1, 2, 3 e 0 trocam a etapa; Ctrl+Z desfaz. Chapas parciais vindas da base aparecem com a posição estimada.</div>
+  <div class="hint" id="hint">Clique numa chapa para marcar a chapa inteira. Arraste para marcar só uma parte (retângulo, inclusive pegando vários anéis). Teclas 1, 2, 3 e 0 trocam a etapa; Ctrl+Z desfaz. Copie ou baixe o resultado antes de sair, porque a página sempre abre no último levantamento real. Chapas parciais vindas da base aparecem com a posição estimada.</div>
 </div>
 
 <div class="cards" id="cards"></div>
@@ -146,7 +146,7 @@ textarea{width:100%;min-height:70px;resize:vertical;box-sizing:border-box}
       <button id="reset">Recomeçar da base</button>
     </div>
     <div class="msg" id="msg" role="status"></div>
-    <div class="s" style="font-size:12.5px;color:var(--muted)">Cole o resultado no chat do Claude (ou mande o arquivo JSON). O Claude confere com as fotos e só então atualiza a planilha, as imagens e o 3D. O rascunho fica guardado neste navegador até você recomeçar.</div>
+    <div class="s" style="font-size:12.5px;color:var(--muted)">Cole o resultado no chat do Claude (ou mande o arquivo JSON). O Claude confere com as fotos e só então atualiza a planilha, as imagens e o 3D. Ao sair ou recarregar, a página volta ao último levantamento real.</div>
   </div>
 </div>
 </div>
@@ -368,12 +368,8 @@ function changed(){ draw(); summary(); clearTimeout(saveT); saveT=setTimeout(sav
 // ---------- rascunho no navegador ----------
 function b64(u8){ var s='', CH_=0x8000; for (var i=0;i<u8.length;i+=CH_) s+=String.fromCharCode.apply(null,u8.subarray(i,i+CH_)); return btoa(s); }
 function unb64(s){ var b=atob(s), u=new Uint8Array(b.length); for (var i=0;i<b.length;i++) u[i]=b.charCodeAt(i); return u; }
-function saveDraft(){ try { var tot=0; CH.forEach(function(c){tot+=c.c.length;}); var all=new Uint8Array(tot), o=0; CH.forEach(function(c){ all.set(c.c,o); o+=c.c.length; });
-  localStorage.setItem('levman_'+st.tq, JSON.stringify({ v:1, sit:T.sit, dt:$('dt').value, obs:$('obs').value, cells:b64(all) })); } catch(e){} }
-function loadDraft(){ try { var s=localStorage.getItem('levman_'+st.tq); if (!s) return false; var d=JSON.parse(s); if (d.sit!==T.sit) return false;
-  var all=unb64(d.cells), o=0, tot=0; CH.forEach(function(c){tot+=c.c.length;}); if (all.length!==tot) return false;
-  CH.forEach(function(c){ c.c=all.slice(o,o+c.c.length); o+=c.c.length; calc(c); });
-  if (d.dt) $('dt').value=d.dt; $('obs').value=d.obs||''; return true; } catch(e){ return false; } }
+function saveDraft(){ try{ localStorage.removeItem('levman_'+st.tq); }catch(e){} } // sempre abre no levantamento real (Paulo, 26/11)
+function loadDraft(){ saveDraft(); return false; }
 
 // ---------- saída ----------
 function rle(c){ var rows=[]; for (var r=0;r<ROWS;r++){ var out=[], run=-1, n=0; for (var col=0;col<c.cols;col++){ var v=c.c[r*c.cols+col]; if (v===run) n++; else { if (run>=0) out.push(run+'x'+n); run=v; n=1; } } out.push(run+'x'+n); rows.push(out.join(',')); } return rows.join('/'); }

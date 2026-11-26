@@ -114,7 +114,7 @@ textarea{width:100%;min-height:70px;resize:vertical;box-sizing:border-box}
 </div>
 <div class="sheet">
   <div class="scroll" id="sc"><canvas id="cv"></canvas><div class="tip" id="tip" hidden></div></div>
-  <div class="hint">Vista de cima, norte para cima. Clique numa chapa para marcar a chapa inteira; arraste para marcar só uma parte. Teclas 1 (limpo) e 0 (não limpo); Ctrl+Z desfaz. Pontos laranja: BVs do teto; vermelhos na borda: BVs do costado. Chapas parciais da base aparecem com a parte limpa no lado leste (posição estimada).</div>
+  <div class="hint">Vista de cima, norte para cima. Clique numa chapa para marcar a chapa inteira; arraste para marcar só uma parte. Teclas 1 (limpo) e 0 (não limpo); Ctrl+Z desfaz. Copie ou baixe o resultado antes de sair, porque a página sempre abre no último levantamento real. Pontos laranja: BVs do teto; vermelhos na borda: BVs do costado. Chapas parciais da base aparecem com a parte limpa no lado leste (posição estimada).</div>
 </div>
 <div class="cards" id="cards" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))"></div>
 <div class="cols">
@@ -132,7 +132,7 @@ textarea{width:100%;min-height:70px;resize:vertical;box-sizing:border-box}
       <button id="reset">Recomeçar da base</button>
     </div>
     <div class="msg" id="msg" role="status"></div>
-    <div style="font-size:12.5px;color:var(--muted)">Cole o resultado no chat do Claude (ou mande o JSON). O Claude confere com as fotos e só então atualiza o 3D e o PNG do teto. O rascunho fica guardado neste navegador.</div>
+    <div style="font-size:12.5px;color:var(--muted)">Cole o resultado no chat do Claude (ou mande o JSON). O Claude confere com as fotos e só então atualiza o 3D e o PNG do teto. Ao sair ou recarregar, a página volta ao último levantamento real.</div>
   </div>
 </div>
 </div>
@@ -234,11 +234,8 @@ function summary(){var a=tot(function(c){return c.p;}),b=tot(function(c,i){retur
 var saveT=null;
 function changed(){draw();summary();clearTimeout(saveT);saveT=setTimeout(saveDraft,400);}
 function key(){return 'levman_teto_'+st.tq;}
-function saveDraft(){try{var o={};CH.forEach(function(c){if(Math.abs(c.p-base[c.i])>0.0005)o[c.i]=Array.prototype.join.call(c.c,'');});
-  localStorage.setItem(key(),JSON.stringify({v:1,sit:D.sit,n:CH.length,dt:$('dt').value,obs:$('obs').value,ch:o}));}catch(e){}}
-function loadDraft(){try{var d=JSON.parse(localStorage.getItem(key())||'null');if(!d||d.sit!==D.sit||d.n!==CH.length)return false;
-  Object.keys(d.ch).forEach(function(i){var c=CH[i],s=d.ch[i];if(!c||s.length!==c.c.length)return;for(var j=0;j<s.length;j++)c.c[j]=s.charCodeAt(j)-48;calc(c);});
-  if(d.dt)$('dt').value=d.dt;$('obs').value=d.obs||'';return true;}catch(e){return false;}}
+function saveDraft(){ try{ localStorage.removeItem(key()); }catch(e){} } // sempre abre no levantamento real (Paulo, 26/11)
+function loadDraft(){ saveDraft(); return false; }
 function result(onlyChanged){var a=tot(function(c){return c.p;}),r4=function(x){return Math.round(x*10000)/10000;};
   var L=CH.filter(function(c){return !onlyChanged||Math.abs(c.p-base[c.i])>0.0005;}).map(function(c){var o={fiada:c.f,chapa:c.n,area:c.ar,limpo:r4(c.p)};if(Math.abs(c.p-base[c.i])>0.0005)o.alterada=true;return o;});
   return{tanque:st.tq,parte:'teto flutuante (lençol)',data:$('dt').value,base:D.sit,origem:'levantamento manual no site',obs:$('obs').value.trim(),
