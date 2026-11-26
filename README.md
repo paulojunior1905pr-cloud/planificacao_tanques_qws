@@ -48,3 +48,12 @@ Padrão aprovado (24/11/2026): vista de cima, legenda com só 2 itens, **Limpo**
 chapa limpa em parte mostra a parte limpa em azul e o resto em bege; cartões Limpo / Não limpo (m² e % do lençol) + Lençol limpo (%);
 só o lençol, sem o flutuador/pontão e sem o costado (25/11/2026); BVs do teto (laranja) e ângulos a cada 30° em volta do lençol. O desenho fica em
 `planificacao_teto.js`. Para pôr o botão num tanque novo com teto: `python ferramentas/botao_teto.py` e depois `python ferramentas/versao_js.py`.
+
+## Levantamento manual (`levantamento.html`)
+Nos modelos de pintura do costado, o botão "✎ Levantamento manual" abre `levantamento.html#TQ-xxxxx`. Nela o avanço é marcado
+direto na planificação 360°: clique pinta a chapa inteira, arrastar pinta só a área do retângulo, e o modo "Em andamento"
+marca a chapa com o % digitado. O avanço por etapa e o global (média das 3 etapas) recalculam na hora, e a lista mostra as
+chapas alteradas. A base é o último levantamento do próprio modelo (a página lê `DATA`, `FAIXAS`, `NUM`, a escada e a data
+direto de `tanques/TQ-xxxxx.html`, então não precisa regravar nada quando o modelo muda). O resultado sai por
+"Copiar resultado para o chat" (JSON só com as chapas alteradas) ou pelos botões ⤓ JSON / ⤓ CSV; o rascunho fica no navegador.
+Tanque novo de pintura: rode `python ferramentas/botao_levantamento.py` (não duplica).
