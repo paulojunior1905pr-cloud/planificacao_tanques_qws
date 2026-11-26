@@ -64,3 +64,8 @@ vista de cima do lençol (norte para cima), marcando **Limpo / Não limpo** com 
 "Limpeza parcial" (% da chapa, a partir do lado leste, como no PNG do teto). Mostra m² limpo, % do lençol limpo e as chapas
 alteradas; sai por "Copiar resultado para o chat", ⤓ JSON e ⤓ CSV (`limpo` = fração da chapa, mesma chave `fiada-chapa` de `ROOF_L`).
 A base vem de `ROOF_P`/`ROOF_L` do próprio modelo. O botão é colocado por `ferramentas/botao_levantamento.py`.
+
+**Parte Flutuador** (modelos com `const FLUT_S=`; abre direto com `#TQ-xxxxx&flutuador`): 72 porões (P1 sob a escada, anti-horário),
+setor interno e externo. Clique marca o setor inteiro; "Limpeza parcial" marca o % a partir do início do porão (ang_ini), como no
+PNG do flutuador. O JSON sai com valores absolutos de todos os setores:
+`{"data":..,"fonte":"levantamento manual site","limpeza":{"P1-interno":1,...},"alterados":[..]}` (mesma chave de `FLUT_L`).

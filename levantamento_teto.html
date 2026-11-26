@@ -88,7 +88,7 @@ textarea{width:100%;min-height:70px;resize:vertical;box-sizing:border-box}
 <header>
   <div>
     <div class="top"><a href="./">&larr; Tanques</a><a id="ver3d" href="./">Ver o 3D</a><a id="costado" href="levantamento.html">Costado</a><button id="tema-toggle" type="button">Tema</button></div>
-    <div class="eyebrow">Teto flutuante · limpeza do lençol · levantamento manual</div>
+    <div class="eyebrow" id="eyb">Teto flutuante · limpeza do lençol · levantamento manual</div>
     <h1 id="ttl">Levantamento do teto</h1>
   </div>
   <div class="meta">
@@ -97,6 +97,10 @@ textarea{width:100%;min-height:70px;resize:vertical;box-sizing:border-box}
   </div>
 </header>
 <div class="bar" role="toolbar" aria-label="Ferramentas">
+  <div class="grp"><span class="lb">Parte</span>
+    <button id="pL" aria-pressed="true" title="Chapas do lençol">Lençol</button>
+    <button id="pF" aria-pressed="false" title="Porões do flutuador (P1 a P72, setor interno e externo)">Flutuador</button>
+  </div>
   <div class="grp"><span class="lb">Marcar</span>
     <button id="e1"><span class="sw" style="background:#2E86C1"></span>Limpo</button>
     <button id="e0"><span class="sw" style="background:#D9D2C3"></span>Não limpo</button>
@@ -106,7 +110,7 @@ textarea{width:100%;min-height:70px;resize:vertical;box-sizing:border-box}
     <button id="mAnd" aria-pressed="false" title="Clique marca o % indicado da chapa como limpo, a partir do lado leste">Limpeza parcial</button>
     <label class="chk" for="pct"><input type="number" id="pct" min="1" max="99" value="50">%</label>
   </div>
-  <div class="grp"><span class="lb">Ver</span><label class="chk" for="nums"><input type="checkbox" id="nums">Fiada-chapa</label></div>
+  <div class="grp"><span class="lb">Ver</span><label class="chk" for="nums"><input type="checkbox" id="nums"><span id="numsT">Fiada-chapa</span></label></div>
   <div class="grp"><span class="lb">Zoom</span>
     <button id="z1" data-z="1" aria-pressed="true">1×</button><button id="z2" data-z="2" aria-pressed="false">2×</button><button id="z3" data-z="3" aria-pressed="false">3×</button>
   </div>
@@ -114,13 +118,14 @@ textarea{width:100%;min-height:70px;resize:vertical;box-sizing:border-box}
 </div>
 <div class="sheet">
   <div class="scroll" id="sc"><canvas id="cv"></canvas><div class="tip" id="tip" hidden></div></div>
-  <div class="hint">Vista de cima, norte para cima. Clique numa chapa para marcar a chapa inteira; arraste para marcar só uma parte. Teclas 1 (limpo) e 0 (não limpo); Ctrl+Z desfaz. Copie ou baixe o resultado antes de sair, porque a página sempre abre no último levantamento real. Pontos laranja: BVs do teto; vermelhos na borda: BVs do costado. Chapas parciais da base aparecem com a parte limpa no lado leste (posição estimada).</div>
+  <div class="hint" id="hintL">Vista de cima, norte para cima. Clique numa chapa para marcar a chapa inteira; arraste para marcar só uma parte. Teclas 1 (limpo) e 0 (não limpo); Ctrl+Z desfaz. Copie ou baixe o resultado antes de sair, porque a página sempre abre no último levantamento real. Pontos laranja: BVs do teto; vermelhos na borda: BVs do costado. Chapas parciais da base aparecem com a parte limpa no lado leste (posição estimada).</div>
+  <div class="hint" id="hintF" hidden>Vista de cima, norte para cima. O flutuador tem 72 porões (P1 sob a escada, sentido anti-horário), cada um com setor interno e externo. Clique num setor para marcá-lo; em Limpeza parcial, o % indicado é marcado a partir do início do porão. Teclas 1 (limpo) e 0 (não limpo); Ctrl+Z desfaz. O lençol aparece em cinza só como referência.</div>
 </div>
 <div class="cards" id="cards" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))"></div>
 <div class="cols">
   <div class="box">
-    <h2>Chapas alteradas <span id="nAlt" style="font:500 14px var(--f-b);color:var(--muted)"></span></h2>
-    <div class="tbl"><table><thead><tr><th>Fiada</th><th>Chapa</th><th>Área m²</th><th>Limpo</th></tr></thead><tbody id="alt"></tbody></table></div>
+    <h2><span id="altT">Chapas alteradas</span> <span id="nAlt" style="font:500 14px var(--f-b);color:var(--muted)"></span></h2>
+    <div class="tbl"><table><thead><tr id="altH"><th>Fiada</th><th>Chapa</th><th>Área m²</th><th>Limpo</th></tr></thead><tbody id="alt"></tbody></table></div>
   </div>
   <div class="box">
     <h2>Enviar resultado</h2>
@@ -143,8 +148,8 @@ var C={limpo:'#2E86C1',sujo:'#D9D2C3',sujoE:'#A8A292',ink:'#1B2430',muted:'#5B66
 var HM=0.25; // células de 0,25 m × 0,25 m
 var $=function(id){return document.getElementById(id);};
 var cv=$('cv'),ctx=cv.getContext('2d'),sc=$('sc'),tip=$('tip');
-var st={tq:'',lvl:1,mode:'pin',zoom:1,nums:false};
-var D=null,CH=[],base=[],undo=[],S=1,CX=0,CY=0,W=0,H=0,R=40;
+var st={tq:'',lvl:1,mode:'pin',zoom:1,nums:false,parte:'l'};
+var D=null,CH=[],base=[],FS=[],fbase=[],undo=[],S=1,CX=0,CY=0,W=0,H=0,R=40;
 function fmt(x,d){return x.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});}
 function pc(v){return fmt(v*100,1)+'%';}
 function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
@@ -158,6 +163,7 @@ function parse(t){
   var num=g(/const NUM=(\[[\s\S]*?\]);/)||'',bvt=g(/const BVT=(\[[\s\S]*?\]);/),pts=[],re=/\[([\d.]+),'(BV[^']*)'/g,k;
   while((k=re.exec(num)))pts.push([+k[1],k[2]]);
   return {P:JSON.parse(m[1]),L:JSON.parse(m[2]),rp0:+(g(/RP0=([\d.]+)/)||36.937),pts:pts,
+    rp1:+(g(/RP1=([\d.]+)/)||49.05),fs:JSON.parse(g(/const FLUT_S=(\[[\s\S]*?\]);/)||'[]'),fl:JSON.parse(g(/const FLUT_L=(\{[\s\S]*?\});/)||'{}'),
     bvt:bvt?JSON.parse(bvt.replace(/'/g,'"')):[],sit:g(/Último levantamento: ([\d\/]+)/)||''};
 }
 function build(){
@@ -170,18 +176,22 @@ function build(){
     var c={i:i,f:p[0],n:p[1],ar:p[2],poly:poly,bb:[x0,x1,y0,y1],xs:xs,ys:ys,ord:o,c:new Uint8Array(xs.length)};
     var p0=Math.min(1,D.L[p[0]+'-'+p[1]]||0),m=Math.round(p0*xs.length);for(var j=0;j<m;j++)c.c[o[j]]=1;
     calc(c);return c;});
+  FS=D.fs.map(function(q,i){var k='P'+q[0]+'-'+(q[1]==='i'?'interno':'externo');return{i:i,k:k,p:q[0],s:q[1]==='i'?'interno':'externo',a0:q[2],a1:q[3],r0:q[4],r1:q[5],ar:q[6],v:Math.min(1,Math.max(0,+D.fl[k]||0))};});
+  fbase=FS.map(function(s){return s.v;});
   base=CH.map(function(c){return c.p;});undo=[];$('undo').disabled=true;
 }
 function calc(c){var n=0;for(var j=0;j<c.c.length;j++)n+=c.c[j];c.p=n/c.c.length;}
 function snap(L){var m={};L.forEach(function(c){if(!m[c.i])m[c.i]=c.c.slice();});return m;}
-function pushUndo(m){if(!Object.keys(m).length)return;undo.push(m);if(undo.length>80)undo.shift();$('undo').disabled=false;}
-function doUndo(){var m=undo.pop();if(!m)return;Object.keys(m).forEach(function(i){CH[i].c=m[i];calc(CH[i]);});$('undo').disabled=!undo.length;changed();}
+function pushUndo(m){if(!Object.keys(m).length||(m.__f&&!Object.keys(m.__f).length))return;undo.push(m);if(undo.length>80)undo.shift();$('undo').disabled=false;}
+function doUndo(){var m=undo.pop();if(!m)return;if(m.__f){Object.keys(m.__f).forEach(function(i){FS[i].v=m.__f[i];});}else Object.keys(m).forEach(function(i){CH[i].c=m[i];calc(CH[i]);});$('undo').disabled=!undo.length;changed();}
 
 // geometria: x = leste, y = norte; norte para cima
 function PX(x){return CX+x*S;} function PY(y){return CY-y*S;}
 function MX(px){return (px-CX)/S;} function MY(py){return (CY-py)/S;}
+function findS(mx,my){var r=Math.hypot(mx,my),a=(Math.atan2(mx,my)*180/Math.PI+360)%360;for(var i=0;i<FS.length;i++){var s=FS[i];if(r>=s.r0&&r<s.r1&&a>=s.a0&&a<s.a1)return s;}return null;}
 function find(mx,my){for(var i=0;i<CH.length;i++){var c=CH[i],b=c.bb;if(mx<b[0]||mx>b[1]||my<b[2]||my>b[3])continue;if(inPoly(mx,my,c.poly))return c;}return null;}
 function size(){
+  R=st.parte==='f'?D.rp1:D.rp0;
   var cw=sc.clientWidth||900; W=Math.round(Math.max(Math.min(cw,1000),560)*st.zoom); H=W;
   S=(W/2-46)/(R+1.5); CX=W/2; CY=H/2;
   var dpr=window.devicePixelRatio||1; cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); cv.style.width=W+'px'; cv.style.height=H+'px';
@@ -192,6 +202,7 @@ function path(c){ctx.beginPath();c.poly.forEach(function(q,i){if(i)ctx.lineTo(PX
 function draw(){
   ctx.fillStyle='#FFFFFF';ctx.fillRect(0,0,W,H);
   ctx.lineJoin='round'; var cs=HM*S+0.6;
+  if(st.parte==='f'){drawF();return;}
   CH.forEach(function(c){path(c);ctx.fillStyle=c.p>=1?C.limpo:C.sujo;ctx.fill();
     if(c.p>0&&c.p<1){ctx.save();path(c);ctx.clip();ctx.fillStyle=C.limpo;for(var j=0;j<c.c.length;j++)if(c.c[j])ctx.fillRect(PX(c.xs[j]-HM/2)-0.3,PY(c.ys[j]+HM/2)-0.3,cs,cs);ctx.restore();path(c);}
     ctx.strokeStyle=c.p>0?'rgba(255,255,255,0.75)':C.sujoE;ctx.lineWidth=1;ctx.stroke();});
@@ -213,6 +224,28 @@ function draw(){
   if(selRect){var x1=Math.min(selRect[0],selRect[2]),x2=Math.max(selRect[0],selRect[2]),y1=Math.min(selRect[1],selRect[3]),y2=Math.max(selRect[1],selRect[3]);
     ctx.fillStyle=st.lvl?'rgba(46,134,193,0.2)':'rgba(168,162,146,0.35)';ctx.fillRect(x1,y1,x2-x1,y2-y1);ctx.setLineDash([6,4]);ctx.strokeStyle='#B8860B';ctx.lineWidth=2;ctx.strokeRect(x1,y1,x2-x1,y2-y1);ctx.setLineDash([]);}
 }
+function setorPath(r0,r1,a0,a1){var k=Math.PI/180;ctx.beginPath();ctx.arc(CX,CY,r1*S,(a0-90)*k,(a1-90)*k);ctx.arc(CX,CY,r0*S,(a1-90)*k,(a0-90)*k,true);ctx.closePath();}
+function drawF(){
+  ctx.fillStyle='#E4E7EA';ctx.beginPath();ctx.arc(CX,CY,D.rp0*S,0,7);ctx.fill();
+  ctx.fillStyle='#8A9096';ctx.font='700 '+Math.max(14,Math.min(30,S*1.2))+'px Barlow Condensed, Arial Narrow, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('LENÇOL',CX,CY-8);ctx.font='500 '+Math.max(11,Math.min(16,S*0.6))+'px Barlow, Arial, sans-serif';ctx.fillText('(marcado na parte Lençol)',CX,CY+16);
+  FS.forEach(function(s){setorPath(s.r0,s.r1,s.a0,s.a1);ctx.fillStyle=s.v>=1?C.limpo:C.sujo;ctx.fill();
+    if(s.v>0&&s.v<1){setorPath(s.r0,s.r1,s.a0,s.a0+s.v*(s.a1-s.a0));ctx.fillStyle=C.limpo;ctx.fill();}
+    setorPath(s.r0,s.r1,s.a0,s.a1);ctx.strokeStyle=s.v>0?'rgba(255,255,255,0.8)':C.sujoE;ctx.lineWidth=1;ctx.stroke();});
+  ctx.strokeStyle='#8A9096';ctx.lineWidth=2;ctx.beginPath();ctx.arc(CX,CY,R*S,0,7);ctx.stroke();
+  ctx.fillStyle=C.muted;ctx.font='600 12px IBM Plex Mono, monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+  for(var a=0;a<360;a+=30){var t=a*Math.PI/180;ctx.fillText(a+'°',PX((R+1.6)*Math.sin(t)),PY((R+1.6)*Math.cos(t)));}
+  D.pts.forEach(function(p){var t=p[0]*Math.PI/180,x=PX((R+0.2)*Math.sin(t)),y=PY((R+0.2)*Math.cos(t));
+    ctx.fillStyle='#fff';ctx.strokeStyle=C.bvC;ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,4.5,0,7);ctx.fill();ctx.stroke();});
+  var big=st.nums||S*0.087*D.rp1>16;
+  if(big){ctx.font='600 '+Math.max(8,Math.min(13,S*0.5))+'px IBM Plex Mono, monospace';ctx.fillStyle='rgba(27,36,48,0.85)';
+    FS.forEach(function(s){if(s.s!=='interno'&&!st.nums)return;var am=(s.a0+s.a1)/2*Math.PI/180,rm=(s.r0+s.r1)/2;ctx.save();ctx.translate(PX(rm*Math.sin(am)),PY(rm*Math.cos(am)));
+      var rot=am-Math.PI/2;if(am>Math.PI)rot+=Math.PI;ctx.rotate(rot);ctx.fillText(st.nums?('P'+s.p+(s.s==='interno'?' i':' e')):('P'+s.p),0,0);ctx.restore();});}
+  ctx.fillStyle=C.ink;ctx.font='700 15px Barlow Condensed, Arial Narrow, sans-serif';ctx.textAlign='left';ctx.fillText('N ↑',10,16);
+}
+function applySetor(s){var m={__f:{}};m.__f[s.i]=s.v;
+  if(st.mode==='and'&&st.lvl===1)s.v=Math.round(Math.max(1,Math.min(99,+$('pct').value||50)))/100;else s.v=st.lvl;
+  pushUndo(m);changed();}
 function applyChapa(c){var m=snap([c]),N=c.c.length,j;
   if(st.mode==='and'&&st.lvl===1){var cnt=Math.round(Math.max(1,Math.min(99,+$('pct').value||50))/100*N);for(j=0;j<N;j++)c.c[j]=0;for(j=0;j<cnt;j++)c.c[c.ord[j]]=1;}
   else for(j=0;j<N;j++)c.c[j]=st.lvl;
@@ -223,7 +256,16 @@ function applyRect(a,b,cc,d){var xa=MX(Math.min(a,cc)),xb=MX(Math.max(a,cc)),yb=
   pushUndo(m);changed();}
 function tot(P){var t=0,ok=0,n=0;CH.forEach(function(c,i){var p=P(c,i);t+=c.ar;ok+=c.ar*p;if(p>=1)n++;});return{t:t,ok:ok,v:ok/t,n:n};}
 function dl(v){var d=v*100;if(Math.abs(d)<0.05)return'<span class="delta">±0,0</span>';return'<span class="delta '+(d>0?'up':'dn')+'">'+(d>0?'+':'−')+fmt(Math.abs(d),1)+' p.p.</span>';}
-function summary(){var a=tot(function(c){return c.p;}),b=tot(function(c,i){return base[i];});
+function totF(P){var t=0,ok=0,n=0;FS.forEach(function(s,i){var p=P(s,i);t+=s.ar;ok+=s.ar*p;if(p>=1)n++;});return{t:t,ok:ok,v:t?ok/t:0,n:n};}
+function summaryF(){var a=totF(function(s){return s.v;}),b=totF(function(s,i){return fbase[i];});
+  $('cards').innerHTML='<div class="card"><div class="t"><span class="sw" style="background:'+C.limpo+'"></span>Limpo</div><div class="v">'+fmt(a.ok,0)+' m²</div>'+
+   '<div class="meter"><i class="base" style="width:'+(b.v*100)+'%"></i><i style="width:'+(a.v*100)+'%;background:'+C.limpo+'"></i></div><div class="s">'+a.n+' setores inteiros limpos · '+dl(a.v-b.v)+' desde a base</div></div>'+
+   '<div class="card"><div class="t"><span class="sw" style="background:'+C.sujo+'"></span>Não limpo</div><div class="v">'+fmt(a.t-a.ok,0)+' m²</div><div class="s">'+pc(1-a.v)+' do flutuador · '+FS.length+' setores, '+fmt(a.t,0)+' m² no total</div></div>'+
+   '<div class="card g"><div class="t">Flutuador limpo</div><div class="v" style="font-size:52px">'+pc(a.v)+'</div><div class="s">por área · base '+pc(b.v)+' · '+dl(a.v-b.v)+'</div></div>';
+  var rows=[];FS.forEach(function(s,i){if(Math.abs(s.v-fbase[i])<0.0005)return;rows.push('<tr><td>P'+s.p+'</td><td>'+s.s+'</td><td>'+fmt(s.ar,2)+'</td><td><span class="was">'+fmt(fbase[i]*100,0)+' → </span><b>'+fmt(s.v*100,0)+'%</b></td></tr>');});
+  $('alt').innerHTML=rows.length?rows.join(''):'<tr><td colspan="4" class="empty" style="text-align:left">Nenhum setor alterado ainda. Clique num setor do flutuador.</td></tr>';
+  $('nAlt').textContent=rows.length?'· '+rows.length:'';}
+function summary(){if(st.parte==='f'){summaryF();return;}var a=tot(function(c){return c.p;}),b=tot(function(c,i){return base[i];});
   $('cards').innerHTML='<div class="card"><div class="t"><span class="sw" style="background:'+C.limpo+'"></span>Limpo</div><div class="v">'+fmt(a.ok,0)+' m²</div>'+
    '<div class="meter"><i class="base" style="width:'+(b.v*100)+'%"></i><i style="width:'+(a.v*100)+'%;background:'+C.limpo+'"></i></div><div class="s">'+a.n+' chapas inteiras limpas · '+dl(a.v-b.v)+' desde a base</div></div>'+
    '<div class="card"><div class="t"><span class="sw" style="background:'+C.sujo+'"></span>Não limpo</div><div class="v">'+fmt(a.t-a.ok,0)+' m²</div><div class="s">'+pc(1-a.v)+' do lençol · '+CH.length+' chapas, '+fmt(a.t,0)+' m² no total</div></div>'+
@@ -236,24 +278,39 @@ function changed(){draw();summary();clearTimeout(saveT);saveT=setTimeout(saveDra
 function key(){return 'levman_teto_'+st.tq;}
 function saveDraft(){ try{ localStorage.removeItem(key()); }catch(e){} } // sempre abre no levantamento real (Paulo, 26/11)
 function loadDraft(){ saveDraft(); return false; }
+function resultF(){var a=totF(function(s){return s.v;}),r4=function(x){return Math.round(x*10000)/10000;},L={},alt=[];
+  FS.forEach(function(s,i){L[s.k]=r4(s.v);if(Math.abs(s.v-fbase[i])>0.0005)alt.push(s.k);});
+  return{tanque:st.tq,parte:'teto flutuante (flutuador)',data:$('dt').value,fonte:'levantamento manual site',base:D.sit,obs:$('obs').value.trim(),
+    resumo:{areaTotal:Math.round(a.t*10)/10,limpoM2:Math.round(a.ok*10)/10,limpo:r4(a.v)},
+    nota:'valores absolutos: fração limpa de cada setor (0 a 1); chave da página 3D: FLUT_L["P1-interno"]',alterados:alt,limpeza:L};}
 function result(onlyChanged){var a=tot(function(c){return c.p;}),r4=function(x){return Math.round(x*10000)/10000;};
   var L=CH.filter(function(c){return !onlyChanged||Math.abs(c.p-base[c.i])>0.0005;}).map(function(c){var o={fiada:c.f,chapa:c.n,area:c.ar,limpo:r4(c.p)};if(Math.abs(c.p-base[c.i])>0.0005)o.alterada=true;return o;});
   return{tanque:st.tq,parte:'teto flutuante (lençol)',data:$('dt').value,base:D.sit,origem:'levantamento manual no site',obs:$('obs').value.trim(),
     resumo:{areaTotal:Math.round(a.t*10)/10,limpoM2:Math.round(a.ok*10)/10,limpo:r4(a.v)},
     nota:'limpo = fração limpa da chapa (0 a 1); chave da página 3D: ROOF_L["fiada-chapa"]',chapas:L};}
 function save(name,data,type){try{var u=URL.createObjectURL(new Blob([data],{type:type})),l=document.createElement('a');l.href=u;l.download=name;document.body.appendChild(l);l.click();setTimeout(function(){URL.revokeObjectURL(u);l.remove();},1500);msg('Arquivo '+name+' baixado.',true);}catch(e){msg('Não foi possível baixar o arquivo.',false);}}
-function nome(ext){return st.tq+'_teto_levantamento_manual_'+brDate($('dt').value).replace(/\//g,'-')+'.'+ext;}
-$('dJson').onclick=function(){save(nome('json'),JSON.stringify(result(false),null,1),'application/json');};
-$('dCsv').onclick=function(){var R=result(false),L=['Tanque;Data;Fiada;Chapa;Area (m2);Limpo (%);Alterada'];
+function nome(ext){return st.tq+(st.parte==='f'?'_flutuador':'_teto')+'_levantamento_manual_'+brDate($('dt').value).replace(/\//g,'-')+'.'+ext;}
+$('dJson').onclick=function(){save(nome('json'),JSON.stringify(st.parte==='f'?resultF():result(false),null,1),'application/json');};
+$('dCsv').onclick=function(){if(st.parte==='f'){var F=resultF(),Q=['Tanque;Data;Porao;Setor;Area (m2);Limpo (%);Alterado'];
+    FS.forEach(function(s){Q.push([F.tanque,brDate(F.data),'P'+s.p,s.s,fmt(s.ar,2),fmt(s.v*100,1),F.alterados.indexOf(s.k)>=0?'sim':''].join(';'));});
+    Q.push('');Q.push(['Resumo','','','',fmt(F.resumo.areaTotal,1),fmt(F.resumo.limpo*100,1),''].join(';'));save(nome('csv'),'\ufeff'+Q.join('\r\n'),'text/csv;charset=utf-8');return;}
+  var R=result(false),L=['Tanque;Data;Fiada;Chapa;Area (m2);Limpo (%);Alterada'];
   R.chapas.forEach(function(c){L.push([R.tanque,brDate(R.data),c.fiada,c.chapa,fmt(c.area,2),fmt(c.limpo*100,1),c.alterada?'sim':''].join(';'));});
   L.push('');L.push(['Resumo','','','',fmt(R.resumo.areaTotal,1),fmt(R.resumo.limpo*100,1),''].join(';'));save(nome('csv'),'﻿'+L.join('\r\n'),'text/csv;charset=utf-8');};
-$('send').onclick=function(){var R=result(true),txt='Levantamento manual do teto '+R.tanque+' '+brDate(R.data)+'\n'+JSON.stringify(R);
-  var ok=function(){msg('Resultado copiado ('+R.chapas.length+' chapas alteradas). Cole no chat do Claude.',true);};
+$('send').onclick=function(){var F=st.parte==='f',R=F?resultF():result(true),txt='Levantamento manual do '+(F?'flutuador ':'teto ')+R.tanque+' '+brDate(R.data)+'\n'+JSON.stringify(R);
+  var ok=function(){msg('Resultado copiado ('+(F?R.alterados.length+' setores alterados':R.chapas.length+' chapas alteradas')+'). Cole no chat do Claude.',true);};
   var falha=function(){var t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();try{document.execCommand('copy');ok();}catch(e){msg('Não foi possível copiar. Use o botão JSON.',false);}t.remove();};
   if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(ok,falha);else falha();};
 function press(ids,on){ids.forEach(function(id){$(id).setAttribute('aria-pressed',id===on?'true':'false');});}
 function setLvl(L){st.lvl=L;press(['e1','e0'],'e'+L);$('mAnd').disabled=L===0;if(L===0&&st.mode==='and')setMode('pin');}
 function setMode(m){st.mode=m;press(['mPin','mAnd'],m==='pin'?'mPin':'mAnd');}
+function setParte(p){if(p==='f'&&!FS.length)return;st.parte=p;press(['pL','pF'],p==='f'?'pF':'pL');var F=p==='f';
+  $('eyb').textContent='Teto flutuante · limpeza do '+(F?'flutuador':'lençol')+' · levantamento manual';$('ttl').textContent=st.tq+(F?' · flutuador':' · teto');
+  $('hintL').hidden=F;$('hintF').hidden=!F;$('numsT').textContent=F?'Porão-setor':'Fiada-chapa';$('altT').textContent=F?'Setores alterados':'Chapas alteradas';
+  $('altH').innerHTML=F?'<th>Porão</th><th>Setor</th><th>Área m²</th><th>Limpo</th>':'<th>Fiada</th><th>Chapa</th><th>Área m²</th><th>Limpo</th>';
+  $('mPin').textContent=F?'Setor inteiro':'Chapa inteira / área';$('mAnd').title=F?'Clique marca o % indicado do setor como limpo, a partir do início do porão':'Clique marca o % indicado da chapa como limpo, a partir do lado leste';
+  tip.hidden=true;if(D){size();summary();}}
+$('pL').onclick=function(){setParte('l');};$('pF').onclick=function(){setParte('f');};
 $('e1').onclick=function(){setLvl(1);};$('e0').onclick=function(){setLvl(0);};
 $('mPin').onclick=function(){setMode('pin');};$('mAnd').onclick=function(){setMode('and');};
 $('nums').onchange=function(){st.nums=this.checked;draw();};
@@ -270,21 +327,24 @@ function pos(e){var r=cv.getBoundingClientRect();return[e.clientX-r.left,e.clien
 var down=null;
 cv.addEventListener('pointerdown',function(e){if(e.button!==0||!D)return;down=pos(e);cv.setPointerCapture(e.pointerId);tip.hidden=true;});
 cv.addEventListener('pointermove',function(e){if(!D)return;var p=pos(e);
-  if(down){if(st.mode==='pin'&&(Math.abs(p[0]-down[0])>5||Math.abs(p[1]-down[1])>5)){selRect=[down[0],down[1],p[0],p[1]];draw();}return;}
-  var c=find(MX(p[0]),MY(p[1]));if(!c){tip.hidden=true;return;}
+  if(down){if(st.mode==='pin'&&st.parte==='l'&&(Math.abs(p[0]-down[0])>5||Math.abs(p[1]-down[1])>5)){selRect=[down[0],down[1],p[0],p[1]];draw();}return;}
+  if(st.parte==='f'){var s=findS(MX(p[0]),MY(p[1]));if(!s){tip.hidden=true;return;}tip.innerHTML='<b>Porão P'+s.p+' · '+s.s+'</b><br>'+fmt(s.ar,2)+' m² · limpo '+fmt(s.v*100,0)+'%';tip.hidden=false;}
+  else{var c=find(MX(p[0]),MY(p[1]));if(!c){tip.hidden=true;return;}
   tip.innerHTML='<b>Fiada '+c.f+' · chapa '+c.n+'</b><br>'+fmt(c.ar,2)+' m² · limpo '+fmt(c.p*100,0)+'%';tip.hidden=false;
+  }
   var tx=p[0]+14,ty=p[1]+14;if(tx+tip.offsetWidth>W-4)tx=p[0]-tip.offsetWidth-10;if(ty+tip.offsetHeight>H)ty=p[1]-tip.offsetHeight-10;tip.style.left=tx+'px';tip.style.top=ty+'px';});
 cv.addEventListener('pointerleave',function(){if(!down)tip.hidden=true;});
 cv.addEventListener('pointerup',function(e){if(!down)return;var s=down;down=null;if(selRect){var r=selRect;selRect=null;applyRect(r[0],r[1],r[2],r[3]);return;}
+  if(st.parte==='f'){var q=findS(MX(s[0]),MY(s[1]));if(q)applySetor(q);return;}
   var c=find(MX(s[0]),MY(s[1]));if(c)applyChapa(c);});
 cv.addEventListener('pointercancel',function(){down=null;selRect=null;draw();});
 var rz=null;window.addEventListener('resize',function(){clearTimeout(rz);rz=setTimeout(function(){if(D)size();},120);});
 setLvl(1);
-st.tq=(location.hash.slice(1)||'TQ-61006').replace(/[^A-Z0-9-]/gi,'');
+var hs=location.hash.slice(1).split('&');st.tq=(hs[0]||'TQ-61006').replace(/[^A-Z0-9-]/gi,'');
 $('ttl').textContent=st.tq+' · teto';$('ver3d').href='tanques/'+st.tq+'.html';$('costado').href='levantamento.html#'+st.tq;
 msg('Carregando '+st.tq+'…',true);
 fetch('tanques/'+st.tq+'.html',{cache:'no-cache'}).then(function(r){if(!r.ok)throw new Error(r.status);return r.text();}).then(function(t){
-  D=parse(t);build();$('base').textContent=D.sit?'último levantamento, '+D.sit:'sem levantamento';$('dt').value=today();
+  D=parse(t);build();$('pF').disabled=!FS.length;if(!FS.length)$('pF').title='Este tanque ainda não tem o flutuador no 3D';if(hs.indexOf('flutuador')>=0&&FS.length){st.parte='f';setParte('f');}$('base').textContent=D.sit?'último levantamento, '+D.sit:'sem levantamento';$('dt').value=today();
   var had=loadDraft();size();summary();msg(had?'Rascunho do teto recuperado neste navegador.':'',true);
 }).catch(function(e){msg(e.message==='semteto'?st.tq+' não tem teto flutuante no 3D.':'Não foi possível carregar '+st.tq+'. Abra pelo site (GitHub Pages).',false);});
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){if(D)draw();});
