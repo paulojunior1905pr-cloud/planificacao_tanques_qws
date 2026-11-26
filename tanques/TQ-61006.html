@@ -90,7 +90,7 @@ aside{display:flex;flex-direction:column;gap:12px;min-width:0}
     <div class="roofbar" id="roofbar"><b>Teto flutuante</b>
 <button id="rTop" aria-pressed="false">Ver de cima</button>
 <button id="rShell" aria-pressed="true">Costado visível</button>
-<span class="lg"><i style="background:#2E86C1"></i>Limpo</span><span class="lg"><i style="background:#B3AC9C"></i>Não limpo</span><span class="lg"><i style="background:#E67E22;border-radius:50%"></i>BV do teto</span>
+<span class="lg"><i style="background:#2E86C1"></i>Limpo</span><span class="lg"><i style="background:#B3AC9C"></i>Não limpo</span><span class="lg"><i style="background:#E67E22;border-radius:50%"></i>BV do teto</span><span class="lg"><i style="background:#16A085;border-radius:50%"></i>BV do flutuador</span>
 <span id="rKpi" style="margin-left:8px;font-weight:700"></span></div><div class="views" role="group" aria-label="Escolher o que colorir">
       <button data-v="geral" aria-pressed="true">Situação geral</button>
       <button data-v="0" aria-pressed="false"><span class="sw" style="background:var(--hidro)"></span>Hidrojato</button>
@@ -1349,10 +1349,10 @@ document.querySelectorAll('[data-cam]').forEach(b=>b.addEventListener('click',()
 // tooltip
 const ray=new THREE.Raycaster(),mouse=new THREE.Vector2(),tip=document.getElementById('tip');let hovered=null;
 function pick(ev){const r=canvas.getBoundingClientRect();mouse.x=((ev.clientX-r.left)/r.width)*2-1;mouse.y=-((ev.clientY-r.top)/r.height)*2+1;
-  ray.setFromCamera(mouse,camera);const hit=ray.intersectObjects(meshes.filter(m=>m.visible).concat(window.ROOFM||[],window.BVM||[]))[0];
+  ray.setFromCamera(mouse,camera);const hit=ray.intersectObjects(meshes.filter(m=>m.visible).concat(window.ROOFM||[],window.BVM||[],window.BVFM||[]))[0];
   if(hovered&&hovered!==hit?.object){hovered.material.emissive.copy(hovered.baseE);hovered=null;}
   if(!hit){tip.hidden=true;return;}
-  hovered=hit.object;hovered.material.emissive.copy(hovered.baseE).add(new THREE.Color(0x333333));const d=hovered.userData;if(d.bv){tip.innerHTML=`<b>Boca de visita do teto (${d.t})</b><div class="r"><span>Posição</span><span>${fmt(d.ang)}° · R ${fmt(d.r)} m</span></div><div class="r"><span>Ø 914 mm</span><span>pescoço ${Math.round(d.h*1000)} mm</span></div>`;tip.hidden=false;let x=ev.clientX-r.left,y=ev.clientY-r.top;if(x>r.width-200)x-=210;if(y>r.height-170)y-=180;tip.style.left=x+'px';tip.style.top=y+'px';return;}if(d.roof){tip.innerHTML=`<b>Lençol · Faixa F${d.f} · Chapa ${d.c}</b><div class="r"><span>Área</span><span>${fmt(d.ar,1)} m²</span></div><div class="r"><span>Limpeza</span><span>${Math.round((d.pv||0)*100)}%</span></div>`;tip.hidden=false;let x=ev.clientX-r.left,y=ev.clientY-r.top;if(x>r.width-200)x-=210;if(y>r.height-170)y-=180;tip.style.left=x+'px';tip.style.top=y+'px';return;}
+  hovered=hit.object;hovered.material.emissive.copy(hovered.baseE).add(new THREE.Color(0x333333));const d=hovered.userData;if(d.bvf){tip.innerHTML=`<b>Flutuador · Porão P${d.p}</b><div class="r"><span>BV ${d.t} 24"</span><span>${fmt(d.ang)}° · R ${fmt(d.r)} m</span></div>`;tip.hidden=false;let x=ev.clientX-r.left,y=ev.clientY-r.top;if(x>r.width-200)x-=210;if(y>r.height-170)y-=180;tip.style.left=x+'px';tip.style.top=y+'px';return;}if(d.bv){tip.innerHTML=`<b>Boca de visita do teto (${d.t})</b><div class="r"><span>Posição</span><span>${fmt(d.ang)}° · R ${fmt(d.r)} m</span></div><div class="r"><span>Ø 914 mm</span><span>pescoço ${Math.round(d.h*1000)} mm</span></div>`;tip.hidden=false;let x=ev.clientX-r.left,y=ev.clientY-r.top;if(x>r.width-200)x-=210;if(y>r.height-170)y-=180;tip.style.left=x+'px';tip.style.top=y+'px';return;}if(d.roof){tip.innerHTML=`<b>Lençol · Faixa F${d.f} · Chapa ${d.c}</b><div class="r"><span>Área</span><span>${fmt(d.ar,1)} m²</span></div><div class="r"><span>Limpeza</span><span>${Math.round((d.pv||0)*100)}%</span></div>`;tip.hidden=false;let x=ev.clientX-r.left,y=ev.clientY-r.top;if(x>r.width-200)x-=210;if(y>r.height-170)y-=180;tip.style.left=x+'px';tip.style.top=y+'px';return;}
   tip.innerHTML=`<b>Anel ${d.a} · Chapa ${d.n}</b><div class="r"><span>${fmt(d.s)}° a ${fmt(d.e)}°</span><span>${fmt(d.ar,1)} m²</span></div>`+
     (d.o?`<div>${d.o}</div>`:'')+STAGES.map(([n],i)=>`<div class="r"><span>${n}</span><span>${Math.round(d.p[i]*100)}%</span></div>`).join('');
   tip.hidden=false;let x=ev.clientX-r.left,y=ev.clientY-r.top;if(x>r.width-200)x-=210;if(y>r.height-170)y-=180;tip.style.left=x+'px';tip.style.top=y+'px';}
@@ -1412,6 +1412,16 @@ const BVM=[];window.BVM=BVM;
   const top=new THREE.Mesh(new THREE.CylinderGeometry(dc/2,dc/2,0.03,32),mTop());top.position.set(x,YR+h+0.015,z);
   const ref=new THREE.Mesh(new THREE.RingGeometry(0.457,0.86,32),new THREE.MeshLambertMaterial({color:0x8A9096,side:THREE.DoubleSide}));ref.rotation.x=-Math.PI/2;ref.position.set(x,YR+0.01,z);
   [body,top].forEach(m=>{m.baseE=new THREE.Color(0);m.userData={bv:1,t,ang,r,h};BVM.push(m);});ROOF.add(body,top,ref);});}
+// BVs do flutuador (TZJ-005 rev E item 28: 144 un. 24", 2 por porão, R 43,0 e R 46,5 m, no meio de cada porão)
+const BVFM=[];window.BVFM=BVFM;const PN=k=>((21-k)%72+72)%72+1; // P1 = porão da BV-1 (105°–110°, sob a escada), sentido anti-horário
+{const mB=new THREE.MeshLambertMaterial({color:0x5B6168}), mT=new THREE.MeshLambertMaterial({color:0x16A085});
+ for(let k=0;k<72;k++){const ang=2.4+5*k;[[43.0,'interna'],[46.5,'externa']].forEach(([r,t])=>{const a=ang*Math.PI/180,x=r*Math.sin(a),z=-r*Math.cos(a),y0=YR+HP;
+  const body=new THREE.Mesh(new THREE.CylinderGeometry(0.305,0.305,0.25,24),mB.clone());body.position.set(x,y0+0.125,z);
+  const top=new THREE.Mesh(new THREE.CylinderGeometry(0.38,0.38,0.03,24),mT.clone());top.position.set(x,y0+0.265,z);
+  [body,top].forEach(m=>{m.baseE=new THREE.Color(0);m.userData={bvf:1,p:PN(k),t,ang,r};BVFM.push(m);});ROOF.add(body,top);});}
+ // número do porão no pontão
+ for(let k=0;k<72;k++){const a=(2.4+5*k)*Math.PI/180,r=40.2;const cv=document.createElement('canvas');cv.width=128;cv.height=64;const g=cv.getContext('2d');g.fillStyle='#1B2430';g.font='bold 44px sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('P'+PN(k),64,34);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),depthTest:true}));sp.scale.set(2.6,1.3,1);sp.position.set(r*Math.sin(a),YR+HP+0.9,-r*Math.cos(a));ROOF.add(sp);}}
 const rTop=document.getElementById('rTop'),rShell=document.getElementById('rShell');
 rTop.addEventListener('click',()=>{const on=rTop.getAttribute('aria-pressed')!=='true';rTop.setAttribute('aria-pressed',on);
   if(on){controls.autoRotate=false;camera.position.set(0,175,1);controls.target.set(0,YR,0);}else{controls.target.set(0,6,0);camAt(215,190);}controls.update();});
