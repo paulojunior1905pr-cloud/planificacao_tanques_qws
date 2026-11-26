@@ -119,7 +119,7 @@ textarea{width:100%;min-height:70px;resize:vertical;box-sizing:border-box}
     <label class="chk" for="nums"><input type="checkbox" id="nums" checked>Nº das chapas</label>
   </div>
   <div class="grp"><span class="lb">Zoom</span>
-    <button id="z1" data-z="1" aria-pressed="true">1×</button><button id="z2" data-z="2" aria-pressed="false">2×</button><button id="z3" data-z="3" aria-pressed="false">3×</button>
+    <button id="z1" data-z="1" aria-pressed="false">1×</button><button id="z2" data-z="2" aria-pressed="false">2×</button><button id="z3" data-z="3" aria-pressed="true">3×</button>
   </div>
   <div class="grp"><button id="undo" disabled title="Ctrl+Z">↶ Desfazer</button></div>
 </div>
@@ -159,7 +159,7 @@ var ROWS = 20, DEG = 0.2; // resolução da marcação: 20 faixas por anel, colu
 var PADL = 64, PADR = 14, TOP = 58, RH = 62, BOT = 66, MINW = 1250;
 var $ = function(id){ return document.getElementById(id); };
 var cv = $('cv'), ctx = cv.getContext('2d'), sc = $('sc'), tip = $('tip');
-var st = { tq:'TQ-61006', lvl:1, mode:'pin', view:'real', zoom:1, nums:true, keep:true };
+var st = { tq:'TQ-61006', lvl:1, mode:'pin', view:'real', zoom:3, nums:true, keep:true };
 var T, CH, NR, base, undo = [], W = 0, H = 0, GW = 0, gy = TOP;
 
 function fmt(x,d){ return x.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d}); }
