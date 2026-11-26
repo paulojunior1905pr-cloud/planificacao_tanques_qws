@@ -57,3 +57,10 @@ chapas alteradas. A base é o último levantamento do próprio modelo (a página
 direto de `tanques/TQ-xxxxx.html`, então não precisa regravar nada quando o modelo muda). O resultado sai por
 "Copiar resultado para o chat" (JSON só com as chapas alteradas) ou pelos botões ⤓ JSON / ⤓ CSV; o rascunho fica no navegador.
 Tanque novo de pintura: rode `python ferramentas/botao_levantamento.py` (não duplica).
+
+## Levantamento do teto (`levantamento_teto.html`)
+Nos modelos com teto flutuante (`const ROOF_P=`), o botão "✎ Levantamento do teto" abre `levantamento_teto.html#TQ-xxxxx`:
+vista de cima do lençol (norte para cima), marcando **Limpo / Não limpo** com clique (chapa inteira), arrastar (só a área) ou
+"Limpeza parcial" (% da chapa, a partir do lado leste, como no PNG do teto). Mostra m² limpo, % do lençol limpo e as chapas
+alteradas; sai por "Copiar resultado para o chat", ⤓ JSON e ⤓ CSV (`limpo` = fração da chapa, mesma chave `fiada-chapa` de `ROOF_L`).
+A base vem de `ROOF_P`/`ROOF_L` do próprio modelo. O botão é colocado por `ferramentas/botao_levantamento.py`.
