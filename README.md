@@ -55,7 +55,7 @@ direto na planificação 360°: clique pinta a chapa inteira, arrastar pinta só
 marca a chapa com o % digitado. O avanço por etapa e o global (média das 3 etapas) recalculam na hora, e a lista mostra as
 chapas alteradas. A base é o último levantamento do próprio modelo (a página lê `DATA`, `FAIXAS`, `NUM`, a escada e a data
 direto de `tanques/TQ-xxxxx.html`, então não precisa regravar nada quando o modelo muda). O resultado sai por
-"Copiar resultado para o chat" (JSON só com as chapas alteradas) ou pelos botões ⤓ JSON / ⤓ CSV; o rascunho fica no navegador.
+"Copiar resultado para o chat" (JSON só com as chapas alteradas) ou pelos botões ⤓ JSON / ⤓ CSV; a página sempre abre no último levantamento real (nada fica salvo no navegador).
 Tanque novo de pintura: rode `python ferramentas/botao_levantamento.py` (não duplica).
 
 ## Levantamento do teto (`levantamento_teto.html`)
