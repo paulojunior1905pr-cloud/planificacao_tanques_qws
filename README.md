@@ -50,7 +50,7 @@ só o lençol, sem o flutuador/pontão e sem o costado (25/11/2026); BVs do teto
 `planificacao_teto.js`. Para pôr o botão num tanque novo com teto: `python ferramentas/botao_teto.py` e depois `python ferramentas/versao_js.py`.
 
 ## Levantamento manual (`levantamento.html`)
-Nos modelos de pintura do costado, o botão "✎ Levantamento manual" abre `levantamento.html#TQ-xxxxx`. Nela o avanço é marcado
+Nos modelos de pintura do costado, o botão "✎ Levantamento do costado" abre `levantamento.html#TQ-xxxxx`. Nela o avanço é marcado
 direto na planificação 360°: clique pinta a chapa inteira, arrastar pinta só a área do retângulo, e o modo "Em andamento"
 marca a chapa com o % digitado. O avanço por etapa e o global (média das 3 etapas) recalculam na hora, e a lista mostra as
 chapas alteradas. A base é o último levantamento do próprio modelo (a página lê `DATA`, `FAIXAS`, `NUM`, a escada e a data
