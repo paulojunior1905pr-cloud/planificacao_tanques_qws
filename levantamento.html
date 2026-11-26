@@ -87,7 +87,7 @@ textarea{width:100%;min-height:70px;resize:vertical;box-sizing:border-box}
 <div class="wrap">
 <header>
   <div>
-    <div class="top"><a href="./">&larr; Tanques</a><a id="ver3d" href="./">Ver o 3D</a><button id="tema-toggle" type="button">Tema</button></div>
+    <div class="top"><a href="./">&larr; Tanques</a><a id="ver3d" href="./">Ver o 3D</a><a id="teto" href="levantamento_teto.html" hidden>Teto</a><button id="tema-toggle" type="button">Tema</button></div>
     <div class="eyebrow">Planificação do costado · levantamento manual</div>
     <h1 id="ttl">Levantamento manual</h1>
   </div>
@@ -450,13 +450,13 @@ function parse(t){
   var data=JSON.parse(g(/const DATA=(\[[\s\S]*?\]);/)), fx=g(/const FAIXAS=(\[[\s\S]*?\]);/), num=g(/const NUM=(\[[\s\S]*?\]);/)||'', cfg=g(/PLANIF_CFG=(\{[\s\S]*?\});/);
   if (!data.length || typeof data[0].p==='number') throw new Error('iso');
   var pts=[], re=/\[([\d.]+),'([^']+)'/g, m; while ((m=re.exec(num))) pts.push([+m[1],m[2]]);
-  return { data:data, faixas:fx?JSON.parse(fx):[], pts:pts, escada:cfg?JSON.parse(cfg).escada:null, sit:g(/Último levantamento: ([\d\/]+)/)||'' };
+  return { data:data, faixas:fx?JSON.parse(fx):[], pts:pts, escada:cfg?JSON.parse(cfg).escada:null, teto:/const ROOF_P=/.test(t), sit:g(/Último levantamento: ([\d\/]+)/)||'' };
 }
 function loadTank(tq){
   saveDraft && CH && saveDraft();
   st.tq=tq; $('ttl').textContent=tq; $('ver3d').href='tanques/'+tq+'.html'; msg('Carregando '+tq+'…',true);
   if (location.hash!=='#'+tq) history.replaceState(null,'','#'+tq);
-  var go=function(){ build(tq); $('base').textContent = T.sit ? 'último levantamento, '+T.sit : 'sem avanço lançado';
+  var go=function(){ $('teto').hidden=!TQS[tq].teto; $('teto').href='levantamento_teto.html#'+tq; build(tq); $('base').textContent = T.sit ? 'último levantamento, '+T.sit : 'sem avanço lançado';
     $('dt').value=today(); $('obs').value=''; var had=loadDraft(); size(); summary();
     msg(had?'Rascunho deste tanque recuperado neste navegador.':'',true); };
   if (TQS[tq]) return go();
