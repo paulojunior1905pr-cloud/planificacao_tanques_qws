@@ -26,7 +26,7 @@
     var tq = ((document.querySelector('h1') || {}).textContent || document.title).match(/TQ-\d+/);
     var sit = window.ROOF_SIT || ((document.querySelector('header .date') || {}).textContent || '').trim();
     return { pl: pl, tot: tot, ok: ok, nL: nL, nP: nP, aL: aL, aP: aP, n: pl.length, fiadas: fiadas, pts: pts,
-      rp0: g('RP0') || 36.937, rp1: g('RP1') || 49.05, tq: tq ? tq[0] : '', sit: sit };
+      rp0: g('RP0') || 36.937, rp1: g('RP1') || 49.05, tq: tq ? tq[0] : '', sit: '' /* sem data na imagem (Paulo, 27/11) */ };
   }
 
   function corChapa(p) { return p >= 1 ? C.limpo : C.sujo; } // só 2 estados (Paulo, 24/11): chapa parcial = parte limpa em azul
