@@ -37,7 +37,7 @@
     tq = (tq.match(/TQ-\d+/) || [''])[0];
     var serv = ((document.querySelector('.eyebrow') || {}).textContent || '').split('·').pop().trim();
     var sit = ((document.querySelector('header .date') || {}).textContent || '').trim();
-    return { DATA: DATA, fx: g('FAIXAS') || [], iso: iso, pts: pts, boc: boc, tq: tq, serv: serv, sit: sit, rings: Math.max.apply(null, DATA.map(function (d) { return d.a; })) };
+    return { DATA: DATA, fx: g('FAIXAS') || [], iso: iso, pts: pts, boc: boc, tq: tq, serv: serv, sit: '' /* sem data na imagem (Paulo, 27/11) */, rings: Math.max.apply(null, DATA.map(function (d) { return d.a; })) };
   }
 
   // 3 etapas (Hidrojato, Fundo, Acabamento). Dado antigo com 4 valores: Fundo = maior entre 1ª e 2ª demão.
